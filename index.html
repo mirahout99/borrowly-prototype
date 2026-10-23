@@ -482,9 +482,9 @@ const nextLabel = () => `${day().next}, ${day().nd}`;
 const selected = () => ORDER.filter(k => S.need[k]);
   const listings = k => [ITEMS[k],...(ALTS[k]||[])];
   const itemFor = k => listings(k)[Number.isInteger(S.swaps[k])?S.swaps[k]:0] || ITEMS[k];
-  const itemPrice = (k,it) => k === 'chairs' ? it.per*S.people : it.price;
+  const itemPrice = (k,it) => k === 'chairs' ? it.per*S.people : k === 'dinnerware' ? Math.ceil(S.people/6)*it.price : it.price;
   const price = k => itemPrice(k,itemFor(k));
-  const title = k => k === 'chairs' ? `${S.people} ${itemFor(k).name.toLowerCase()}` : itemFor(k).name;
+  const title = k => k === 'chairs' ? `${S.people} ${itemFor(k).name.toLowerCase()}` : k === 'dinnerware' ? `Dinnerware for ${S.people}` : itemFor(k).name;
   const blocked = k => S.swaps[k] === null;
   const lendersOf = ks => [...new Set(ks.filter(k=>!blocked(k)).map(k=>itemFor(k).lender))];
   const sub = ks => ks.reduce((a,k)=>a+(blocked(k)?0:price(k)),0);
@@ -590,7 +590,7 @@ V.plan = function() {
  const opt=k=>{
    const it=ITEMS[k],on=!!S.need[k],suggested=occ.suggest.includes(k);
    const d=k==='chairs'?`${S.people} seats · from $${itemPrice(k,it)}`:
-     k==='table'?`Seats ${S.people} · from $${it.price}`:`From $${it.price} per night`;
+     k==='table'?`Seats ${S.people} · from ${it.price}`:k==='dinnerware'?`${S.people} place settings · from ${itemPrice(k,it)}`:`From ${it.price} per night`;
    return `<button class="opt ${on?'on':''}" data-act="need" data-v="${k}" aria-pressed="${on}">
      <span class="box">${on?ic('check',16):''}</span><span class="grow"><b>${it.short}</b><span class="small muted d">${d}${suggested?' · Suggested':''}</span></span></button>`;
  };
@@ -603,7 +603,7 @@ V.plan = function() {
      <section class="stack"><h2 class="lbl">Number of guests</h2><div class="stepper">
        <button class="stp" data-act="people" data-v="-1" aria-label="Fewer guests" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
        <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div>
-       <button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=10?'disabled':''}>${ic('plus',22)}</button></div></section>
+       <button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=8?'disabled':''}>${ic('plus',22)}</button></div></section>
      <section class="stack"><h2 class="lbl">Total rental budget</h2><div class="stepper">
        <button class="stp" data-act="budget" data-v="-5" aria-label="Lower budget" ${S.budget<=15?'disabled':''}>${ic('minus',22)}</button>
        <div class="stp-n"><b>$${S.budget}</b><span class="small muted">before optional delivery</span></div>
@@ -766,7 +766,7 @@ V.booked = () => {
 V.ret = () => {
   const B = S.booked; if (!B) return V.booked();
   const ls = lendersOf(B.items), done = B.items.every(k => S.ret[k]);
-  const tname = k => k === 'chairs' ? `${B.people} folding chairs` : itemFor(k).name;
+  const tname = k => k === 'chairs' ? `${B.people} folding chairs` : k === 'dinnerware' ? `Dinnerware for ${B.people}` : itemFor(k).name;
   const shot = k => `<span class="slot filled">${ART[itemFor(k).art]}<span class="ok">${ic('check',12)}</span></span>`;
   return `${topbar('Return and rate')}
     <div class="body">
@@ -918,7 +918,7 @@ const A = {
   reset: () => { S = fresh(); stack = ['home']; show('home', cur ? 'fade' : null); },
   fav: v => { S.fav[v] = !S.fav[v]; rerender(); if (S.fav[v]) toast('Saved to your list', 'heart'); },
   date: v => { S.date = v; rerender(); },
-  people: v => { S.people = Math.min(10, Math.max(2, S.people + Number(v))); rerender(); },
+  people: v => { S.people = Math.min(8, Math.max(2, S.people + Number(v))); rerender(); },
   need: v => { S.need[v] = !S.need[v]; delete S.swaps[v]; rerender(); },
   add: v => { S.need[v] = true; toast(`${ITEMS[v].short} added to your bundle`); if (stack.at(-2) === 'bundle') back(); else { stack = ['home','plan','bundle']; show('bundle','fwd'); } },
   deliv: v => { S.delivery = v === 'runner'; rerender(); },
