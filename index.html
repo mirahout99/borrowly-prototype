@@ -574,7 +574,7 @@ V.home = () => {
       <div class="hero">
         <div class="stack" style="gap:6px"><h3>Hosting this weekend?</h3>
           <p class="small">Say how many are coming. We'll find a table, chairs and more from neighbors.</p>
-          <button class="btn dark sm" data-act="go" data-v="plan" style="align-self:flex-start;margin-top:6px">Plan a dinner</button></div>
+          <button class="btn dark sm" data-act="go" data-v="plan" style="align-self:flex-start;margin-top:6px">Plan a gathering</button></div>
         <div class="hero-art">${ART.table}</div>
       </div>
       <section class="stack"><h2 class="lbl">What do you need?</h2>
@@ -701,15 +701,15 @@ V.coverage = () => `${topbar('Coverage')}
     <div class="foot"><button class="btn ghost" data-act="back">Got it</button></div>`;
 
 V.checkout = () => {
-  const ks = selected(), ls = lendersOf(ks), s = sub(ks), f = fee(ks), total = s + f + (S.delivery ? 12 : 0);
+  const ks = selected(), ls = lendersOf(ks), s = sub(ks), total = s + (S.delivery ? 12 : 0);
   const choice = (on, v, t, d, p) => `<button class="choice ${on?'on':''}" data-act="deliv" data-v="${v}" aria-pressed="${on}"><span class="radio"></span>
       <span class="grow"><b>${t}</b><span class="small muted d">${d}</span></span><b>${p}</b></button>`;
   return `${topbar('Review and pay')}
     <div class="body">
       <div class="card stack" style="gap:12px">
-        <div class="row"><span class="ic-badge">${ic('calendar',18)}</span><div class="grow"><b>${dateLabel()}, 4:30 PM → ${nextLabel()}, 11 AM</b><p class="small muted">1 night · dinner for ${S.people}</p></div></div>
+        <div class="row"><span class="ic-badge">${ic('calendar',18)}</span><div class="grow"><b>${dateLabel()}, 4:30 PM → ${nextLabel()}, 11 AM</b><p class="small muted">1 night · ${OCCASIONS[S.occasion].label.toLowerCase()} for ${S.people}</p></div></div>
         <div class="divider"></div>
-        ${ks.map(k => `<div class="row small"><span class="thumb sm">${ART[ITEMS[k].art]}</span><span class="grow"><b>${title(k)}</b><span class="muted d">${LENDERS[ITEMS[k].lender].name}</span></span><b>$${price(k)}</b></div>`).join('')}
+        ${ks.map(k => `<div class="row small"><span class="thumb sm">${ART[itemFor(k).art]}</span><span class="grow"><b>${title(k)}</b><span class="muted d">${LENDERS[itemFor(k).lender].name}</span></span><b>$${price(k)}</b></div>`).join('')}
       </div>
       <section class="stack"><h2 class="lbl">How it gets to you</h2>
         ${choice(!S.delivery,'pickup','Pick it up yourself',`${ls.length} ${ls.length>1?'stops':'stop'}, all within a ${maxWalk(ls)}-minute walk`,'Free')}
@@ -718,7 +718,7 @@ V.checkout = () => {
       <section class="stack"><h2 class="lbl">Price</h2>
         <div class="prices">
           <div class="pr"><span>Rental, 1 day</span><span>$${s}</span></div>
-          <div class="pr"><span>Service fee</span><span>$${f}</span></div>
+          
           ${S.delivery ? '<div class="pr"><span>Runner</span><span>$12</span></div>' : ''}
           <div class="pr"><span>Damage cover up to $1,000</span><span class="ok-t">Included</span></div>
           <div class="pr total"><span>Total</span><span>$${total}</span></div>
@@ -732,10 +732,10 @@ V.booked = () => {
   const B = S.booked;
   if (!B) return `<div class="top"><span class="spacer"></span><div class="ttl">Bookings</div><span class="spacer"></span></div>
     <div class="body"><div class="empty"><span class="cov-ic">${ic('calendar',30)}</span><h3>No bookings yet</h3>
-      <p class="muted small">Plan a dinner and the things you borrow show up here.</p>
-      <button class="btn red sm" data-act="go" data-v="plan">Plan a dinner</button></div></div>${tabbar('booked')}`;
+      <p class="muted small">Plan a gathering and the things you borrow show up here.</p>
+      <button class="btn red sm" data-act="go" data-v="plan">Plan a gathering</button></div></div>${tabbar('booked')}`;
   const d = DATES.find(x => x.k === B.date), ls = lendersOf(B.items), L0 = LENDERS[ls[0]];
-  const bundleName = B.items.map(k => k === 'chairs' ? `${B.people} chairs` : ITEMS[k].short).join(' + ');
+  const bundleName = B.items.map(k => k === 'chairs' ? `${B.people} chairs` : itemFor(k).short).join(' + ');
   const handoff = B.delivery
     ? `<li class="next"><span class="dotx"></span><div><b>Runner drops everything off</b><span class="s">At your door · live tracking</span></div><time>${d.dow} 4:30 PM</time></li>`
     : ls.map((l, i) => `<li class="${i===0?'next':''}"><span class="dotx"></span><div><b>Pick up from ${LENDERS[l].name}</b><span class="s">${LENDERS[l].street} · ${LENDERS[l].walk} min walk</span></div><time>${d.dow} ${['4:30','4:45','5:00','5:15'][i]} PM</time></li>`).join('');
@@ -745,12 +745,12 @@ V.booked = () => {
   return `<div class="top"><span class="spacer"></span><div class="ttl">Bookings</div><span class="spacer"></span></div>
     <div class="body">
       <div class="row"><h1 class="grow">You're booked</h1><span class="pricetag">${d.dow} · 1 night</span></div>
-      <div class="bk-card"><span class="thumbs">${B.items.slice(0,3).map(k => `<span class="thumb sm">${ART[ITEMS[k].art]}</span>`).join('')}</span>
+      <div class="bk-card"><span class="thumbs">${B.items.slice(0,3).map(k => `<span class="thumb sm">${ART[itemFor(k).art]}</span>`).join('')}</span>
         <div class="grow"><b>${bundleName}</b><p class="small" style="opacity:.75">from ${names(ls)}</p></div></div>
       <ol class="tl">
         <li class="done"><span class="dotx">${ic('check',12)}</span><div><b>${firsts(ls)} approved</b><span class="s">Paid $${B.total} · $100 hold, not charged</span></div><time>Now</time></li>
         ${handoff}
-        <li><span class="dotx"></span><div><b>Your dinner</b><span class="s">${B.people} people at your place</span></div><time>${d.dow} 7:00 PM</time></li>
+        <li><span class="dotx"></span><div><b>Your ${OCCASIONS[B.occasion||'dinner'].label.toLowerCase()}</b><span class="s">${B.people} people at your place</span></div><time>${d.dow} 7:00 PM</time></li>
         <li><span class="dotx"></span><div><b>${B.delivery ? 'Runner collects it all' : 'Return to each neighbor'}</b><span class="s">${B.delivery ? 'Leave it inside your door' : 'Same spots · rate each other'}</span></div><time>${d.next} 11 AM</time></li>
       </ol>
       <div class="soft stack" style="gap:4px"><div class="row" style="gap:6px">${ic('shield',16)}<b class="grow">You're covered</b><span class="small">Included</span></div>
@@ -766,13 +766,13 @@ V.booked = () => {
 V.ret = () => {
   const B = S.booked; if (!B) return V.booked();
   const ls = lendersOf(B.items), done = B.items.every(k => S.ret[k]);
-  const tname = k => k === 'chairs' ? `${B.people} folding chairs` : ITEMS[k].name;
-  const shot = k => `<span class="slot filled">${ART[ITEMS[k].art]}<span class="ok">${ic('check',12)}</span></span>`;
+  const tname = k => k === 'chairs' ? `${B.people} folding chairs` : itemFor(k).name;
+  const shot = k => `<span class="slot filled">${ART[itemFor(k).art]}<span class="ok">${ic('check',12)}</span></span>`;
   return `${topbar('Return and rate')}
     <div class="body">
       <p class="muted">Take a photo of each item where you hand it back. That closes the rental and releases your $100 hold.</p>
       ${B.items.map(k => `<div class="card stack" style="gap:12px">
-          <div class="row"><b class="grow">${tname(k)}</b><span class="small muted">${LENDERS[ITEMS[k].lender].name}</span></div>
+          <div class="row"><b class="grow">${tname(k)}</b><span class="small muted">${LENDERS[itemFor(k).lender].name}</span></div>
           <div class="row"><div class="slot-w">${shot(k)}<span class="small muted">Pickup</span></div>
             <div class="slot-w">${S.ret[k] ? shot(k) : `<button class="slot" data-act="photo" data-v="${k}" aria-label="Add return photo of ${ITEMS[k].short}">${ic('camera',22)}</button>`}<span class="small muted">Return</span></div>
             <p class="small grow ${S.ret[k] ? '' : 'muted'}">${S.ret[k] ? `${ic('check',14)} Matches the pickup photo.` : 'Tap the camera to add a photo.'}</p></div>
@@ -797,7 +797,7 @@ V.earnings = () => {
       <section class="stack"><h2 class="lbl">By week</h2>${chart()}</section>
       <section class="stack" style="gap:0"><h2 class="lbl" style="margin-bottom:2px">Your items</h2>${mine}${newRow}</section>
       ${S.request === 'accepted' ? `<section class="stack"><h2 class="lbl">Coming up</h2><div class="card row"><span class="thumb sm">${ART.projector}</span>
-        <div class="grow"><b>Projector · Ava L.</b><p class="small muted">Pickup Fri, Oct 23 at 6 PM in your lobby</p></div><b>$9</b></div></section>` : ''}
+        <div class="grow"><b>Projector · Ava L.</b><p class="small muted">Pickup Fri, Oct 23 at 6 PM in your lobby</p></div><b>$8.50</b></div></section>` : ''}
       <button class="btn ghost" data-act="go" data-v="list" style="flex:none">${ic('plus',18)} List another item</button>
     </div>${tabbar('earnings')}`;
 };
@@ -816,8 +816,8 @@ V.request = () => {
           <div class="pr"><span class="muted">When</span><span>Fri 6 PM → Sat 10 AM</span></div>
           <div class="pr"><span class="muted">Handoff</span><span>Your lobby</span></div>
           <div class="pr"><span class="muted">Price</span><span>$10.00</span></div>
-          <div class="pr"><span class="muted">Borrowly fee</span><span>−$1.00</span></div>
-          <div class="pr total"><span>You earn</span><span>$9.00</span></div>
+          <div class="pr"><span class="muted">Borrowly fee (15%)</span><span>−$1.50</span></div>
+          <div class="pr total"><span>You earn</span><span>$8.50</span></div>
         </div>
       </div>
       <div class="soft small row" style="gap:8px;align-items:flex-start">${ic('shield',16)}<span>Your projector is covered up to $1,000 while Ava has it.</span></div>
@@ -847,11 +847,11 @@ V.list = () => `${topbar('List an item')}
     <div class="foot"><button class="btn red" data-act="publish">Publish listing</button></div>`;
 
 /* ---------- navigation ---------- */
-const FLOW_B = [['home','Home'],['plan','Plan a dinner'],['bundle','Bundle and map'],['item','Item and lender'],['coverage','Coverage'],['checkout','Checkout'],['booked','Booked'],['ret','Return and rate']];
+const FLOW_B = [['home','Home'],['plan','Plan an event'],['bundle','Recommended bundle'],['swap','Swap items'],['item','Item and lender'],['coverage','Coverage'],['checkout','Checkout'],['booked','Booked'],['ret','Return and rate']];
 const FLOW_L = [['earnings','Earnings'],['request','Approve a request'],['list','List an item']];
 const JUMP = {
   home:['home'], plan:['home','plan'], bundle:['home','plan','bundle'], item:['home','plan','bundle','item'],
-  coverage:['home','plan','bundle','coverage'], checkout:['home','plan','bundle','checkout'],
+  swap:['home','plan','bundle','swap'], coverage:['home','plan','bundle','coverage'], checkout:['home','plan','bundle','checkout'],
   booked:['booked'], ret:['booked','ret'], earnings:['earnings'], request:['earnings','request'], list:['earnings','list'],
 };
 const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
@@ -880,13 +880,13 @@ function rerender(){
   cur.innerHTML = V[cur.dataset.screen]();
   const nb = cur.querySelector('.body'); if (nb) nb.scrollTop = st;
 }
-const go = n => { stack.push(n); show(n, 'fwd'); };
+const go = n => { if(n==='bundle')recommend(); stack.push(n); show(n, 'fwd'); };
 const back = () => { if (stack.length > 1) { stack.pop(); show(stack.at(-1), 'back'); } };
 const tab = n => { if (stack.at(-1) === n && stack.length === 1) return; stack = [n]; show(n, 'fade'); };
 function ensureBooking(){
   if (S.booked) return;
   const ks = selected().length ? selected() : ['table','chairs'];
-  S.booked = {items:ks, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + fee(ks) + (S.delivery ? 12 : 0)};
+  S.booked = {items:ks, occasion:S.occasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
 }
 function jump(n){
   if (!JUMP[n]) n = 'home';
@@ -904,18 +904,27 @@ function toast(msg, icon = 'check'){
 
 const A = {
   go, back, tab, jump,
+  occasion:v=>{ S.occasion=v; S.need=Object.fromEntries(ORDER.map(k=>[k,OCCASIONS[v].defaults.includes(k)])); S.swaps={}; rerender(); },
+  budget:v=>{ S.budget=Math.max(15,Math.min(200,S.budget+Number(v))); rerender(); },
+  makebundle:()=>go('bundle'),
+  priority:v=>{ S.priority=v; recommend(); rerender(); },
+  radius:v=>{ S.radius=Number(v); recommend(); rerender(); },
+  ratingfilter:()=>{ S.minRating=S.minRating===4.8?0:4.8; recommend(); rerender(); },
+  swap:v=>{ S.item=v; go('swap'); },
+  choose:v=>{ const i=Number(v),k=S.item,it=listings(k)[i]; if(!it||!eligible(it))return; S.swaps[k]=i; back(); },
+  remove:v=>{ S.need[v]=false; delete S.swaps[v]; rerender(); },
   item: v => { S.item = v; go('item'); },
   toast: v => toast(v, 'info'),
   reset: () => { S = fresh(); stack = ['home']; show('home', cur ? 'fade' : null); },
   fav: v => { S.fav[v] = !S.fav[v]; rerender(); if (S.fav[v]) toast('Saved to your list', 'heart'); },
   date: v => { S.date = v; rerender(); },
-  people: v => { S.people = Math.min(8, Math.max(2, S.people + Number(v))); rerender(); },
-  need: v => { S.need[v] = !S.need[v]; rerender(); },
+  people: v => { S.people = Math.min(10, Math.max(2, S.people + Number(v))); rerender(); },
+  need: v => { S.need[v] = !S.need[v]; delete S.swaps[v]; rerender(); },
   add: v => { S.need[v] = true; toast(`${ITEMS[v].short} added to your bundle`); if (stack.at(-2) === 'bundle') back(); else { stack = ['home','plan','bundle']; show('bundle','fwd'); } },
   deliv: v => { S.delivery = v === 'runner'; rerender(); },
   pay: () => {
     const ks = selected(), ls = lendersOf(ks);
-    S.booked = {items:ks, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + fee(ks) + (S.delivery ? 12 : 0)};
+    S.booked = {items:ks, occasion:S.occasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
     S.ret = {}; S.rate = {};
     stack = ['booked']; show('booked', 'fwd');
     toast(`${firsts(ls)} approved your request`);
