@@ -672,6 +672,45 @@ V.bundle = function() {
   <div class="foot"><button class="btn red split" data-act="go" data-v="checkout" ${ks.length!==valid.length?'disabled':''}><span>${ks.length!==valid.length?'Adjust filters':'Continue to booking'}</span><span>$${sub(ks)}</span></button></div>`;
 };
 
+const marketMarkup = function(){
+ const keys=ORDER.filter(k=>S.marketCat==='all'||k===S.marketCat);
+ const needle=S.marketSearch.trim().toLowerCase();
+ const entries=keys.flatMap(k=>listings(k).map((it,i)=>({k,it,i}))).filter(({k,it})=>{
+  const match=[ITEMS[k].short,it.name,LENDERS[it.lender].name,...(it.comes||[])].join(' ').toLowerCase();
+  return !needle||match.includes(needle);
+ });
+ if(!entries.length)return `<div class="market-empty"><b>No matching items</b><p class="small muted d">Try another keyword or choose All items.</p><button class="btn ghost sm" data-act="marketcat" data-v="all" style="margin:12px auto 0">View all items</button></div>`;
+ return entries.map(({k,it,i})=>{
+   const inBundle=!!S.need[k]&&(S.swaps[k]===i||(!Number.isInteger(S.swaps[k])&&i===0));
+   const availableNow=available(it),L=LENDERS[it.lender];
+   const verb=!availableNow?'Unavailable':inBundle?'In bundle':S.marketMode==='swap'&&k===S.marketCat?'Swap in':S.need[k]?'Replace item':'Add to bundle';
+   return `<div class="market-card"><span class="thumb">${ART[it.art]}</span>
+     <div class="grow stack" style="gap:5px"><b>${it.name}</b><span class="small muted">${ITEMS[k].short} · ${L.name} · ${it.dist}</span>
+       <span class="small muted">★ ${it.rating} (${it.reviews}) · ${availableNow?'Available '+dateLabel():'Not available '+dateLabel()}</span>
+       <div class="row" style="justify-content:space-between"><b>${itemPrice(k,it)} / night</b></div>
+       <div class="market-actions"><button class="micro" data-act="marketdetails" data-v="${k}:${i}">Details</button>
+         <button class="micro ${!inBundle&&availableNow?'accent':''}" data-act="marketpick" data-v="${k}:${i}" ${!availableNow||inBundle?'disabled':''}>${verb}</button></div>
+     </div></div>`;
+ }).join('');
+};
+
+V.market = function(){
+ const swap=S.marketMode==='swap',k=S.marketCat, ks=selected();
+ return `${topbar(swap?'Swap '+ITEMS[k].short.toLowerCase():'Marketplace','<span class="spacer"></span>')}
+   <div class="body">
+     <div class="stack" style="gap:5px"><h1>${swap?'Choose an alternative':'Explore the marketplace'}</h1>
+       <p class="small muted">${swap?`Showing ${ITEMS[k].short.toLowerCase()} listings for your bundle. Compare lenders, then swap in your favorite.`:'Browse neighbors’ items, search freely, and add anything to your bundle.'}</p></div>
+     <div class="market-banner"><span class="grow small">${ks.length?`${ks.length} ${ks.length===1?'item':'items'} in your bundle · ${sub(ks)} / night`:'Your bundle is empty — start with any item.'}</span>
+       <button class="micro accent" data-act="viewbundle">View bundle</button></div>
+     ${swap?`<button class="link" style="align-self:flex-start" data-act="browse" data-v="all">Browse all categories instead →</button>`:''}
+     <label class="market-search" for="marketSearch">${ic('search',19)}<input id="marketSearch" placeholder="Search speakers, chairs, decor..." value="${esc(S.marketSearch)}" autocomplete="off"><span class="small muted">Search</span></label>
+     <div class="stack" style="gap:8px"><h2 class="lbl">Categories</h2>
+       <div class="market-cats">${[['all','All items'],...ORDER.map(k=>[k,ITEMS[k].short])].map(([category,label])=>`<button class="chip pick ${S.marketCat===category?'on':''}" data-act="marketcat" data-v="${category}" aria-pressed="${S.marketCat===category}">${label}</button>`).join('')}</div></div>
+     <div class="stack"><h2 class="lbl">Available listings</h2><div class="market-results" id="marketResults">${marketMarkup()}</div></div>
+     <p class="note">Listings, reviews, availability, and prices are illustrative for this prototype.</p>
+   </div>${tabbar('market')}`;
+};
+
 V.swap = function() {
  const k=S.item, chosen=S.swaps[k];
  const cards=listings(k).map((it,i)=>{
