@@ -585,47 +585,84 @@ V.home = () => {
     </div>${tabbar('home')}`;
 };
 
-V.plan = () => {
-  const opt = (k, t, s, p) => { const on = S.need[k]; return `<button class="opt ${on?'on':''}" data-act="need" data-v="${k}" aria-pressed="${on}">
-      <span class="box">${on ? ic('check',16) : ''}</span><span class="grow"><b>${t}</b><span class="small muted d">${s}</span></span><span class="small muted">${p}</span></button>`; };
-  return `${topbar('Plan a dinner')}
-    <div class="body">
-      <h1>Who's coming, and when?</h1>
-      <section class="stack"><h2 class="lbl">Date</h2>
-        <div class="dates">${DATES.map(d => `<button class="date ${S.date===d.k?'on':''}" data-act="date" data-v="${d.k}" aria-pressed="${S.date===d.k}"><span class="small">${d.dow}</span><b>${d.d}</b><span class="small">Oct</span></button>`).join('')}</div></section>
-      <section class="stack"><h2 class="lbl">People at the table</h2>
-        <div class="stepper"><button class="stp" data-act="people" data-v="-1" aria-label="Fewer people" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
-          <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div>
-          <button class="stp" data-act="people" data-v="1" aria-label="More people" ${S.people>=8?'disabled':''}>${ic('plus',22)}</button></div></section>
-      <section class="stack"><h2 class="lbl">What do you need?</h2>
-        ${opt('table','Dining table',`Seats ${S.people}`,'$12 / day')}
-        ${opt('chairs','Chairs',`${S.people} chairs, $2 each`,`$${ITEMS.chairs.per*S.people} / day`)}
-        ${opt('tv','TV','For a game or movie after dinner','$15 / day')}
-        ${opt('speaker','Speaker','Music for the night','$6 / day')}</section>
-    </div>
-    <div class="foot"><button class="btn red" data-act="go" data-v="bundle" ${selected().length ? '' : 'disabled'}>Find it nearby</button></div>`;
+V.plan = function() {
+ const occ=OCCASIONS[S.occasion];
+ const opt=k=>{
+   const it=ITEMS[k],on=!!S.need[k],suggested=occ.suggest.includes(k);
+   const d=k==='chairs'?`${S.people} seats · from $${itemPrice(k,it)}`:
+     k==='table'?`Seats ${S.people} · from $${it.price}`:`From $${it.price} per night`;
+   return `<button class="opt ${on?'on':''}" data-act="need" data-v="${k}" aria-pressed="${on}">
+     <span class="box">${on?ic('check',16):''}</span><span class="grow"><b>${it.short}</b><span class="small muted d">${d}${suggested?' · Suggested':''}</span></span></button>`;
+ };
+ return `${topbar('Plan your gathering')}
+   <div class="body">
+     <div class="stack" style="gap:5px"><h1>What's the occasion?</h1><p class="small muted">We'll help find the right things for your plans.</p></div>
+     <div class="occasion-grid">${Object.entries(OCCASIONS).map(([k,o])=>`<button class="occasion ${S.occasion===k?'on':''}" data-act="occasion" data-v="${k}" aria-pressed="${S.occasion===k}"><b>${o.emoji} ${o.label}</b><span class="small muted">${o.suggest.length} suggested categories</span></button>`).join('')}</div>
+     <section class="stack"><h2 class="lbl">Date</h2>
+       <div class="dates">${DATES.map(d=>`<button class="date ${S.date===d.k?'on':''}" data-act="date" data-v="${d.k}" aria-pressed="${S.date===d.k}"><span class="small">${d.dow}</span><b>${d.d}</b><span class="small">Oct</span></button>`).join('')}</div></section>
+     <section class="stack"><h2 class="lbl">Number of guests</h2><div class="stepper">
+       <button class="stp" data-act="people" data-v="-1" aria-label="Fewer guests" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
+       <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div>
+       <button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=10?'disabled':''}>${ic('plus',22)}</button></div></section>
+     <section class="stack"><h2 class="lbl">Total rental budget</h2><div class="stepper">
+       <button class="stp" data-act="budget" data-v="-5" aria-label="Lower budget" ${S.budget<=15?'disabled':''}>${ic('minus',22)}</button>
+       <div class="stp-n"><b>$${S.budget}</b><span class="small muted">before optional delivery</span></div>
+       <button class="stp" data-act="budget" data-v="5" aria-label="Raise budget" ${S.budget>=200?'disabled':''}>${ic('plus',22)}</button></div></section>
+     <section class="stack"><h2 class="lbl">What do you need?</h2><p class="hint">Suggested for a ${occ.label.toLowerCase()} — pick what you'd like to borrow.</p>
+       ${[...occ.suggest,...ORDER.filter(k=>!occ.suggest.includes(k))].map(opt).join('')}</section>
+   </div>
+   <div class="foot"><button class="btn red" data-act="makebundle" ${selected().length?'':'disabled'}>Find my bundle · ${selected().length} categories</button></div>`;
 };
 
-V.bundle = () => {
-  if (!selected().length) { S.need.table = S.need.chairs = true; }
-  const ks = selected(), ls = lendersOf(ks);
-  const irow = k => { const it = ITEMS[k], L = LENDERS[it.lender]; return `<button class="irow" data-act="item" data-v="${k}">
-      <span class="thumb">${ART[it.art]}</span><span class="grow"><b>${title(k)}</b><span class="small muted d">${L.name} · ${it.dist} · ★ ${it.rating}</span></span>
-      <b>$${price(k)}</b>${ic('chev',16)}</button>`; };
-  return `${topbar('Your dinner bundle')}
-    <div class="body">
-      <div class="mapbox">${mapSvg(ls)}</div>
-      <div class="row" style="align-items:flex-start"><span class="ic-badge">${ic('walk',20)}</span>
-        <div class="grow"><b>Everything is within a ${maxWalk(ls)}-minute walk</b>
-        <p class="small muted">${ls.length} ${ls.length===1?'neighbor has':'neighbors have'} it free on ${dateLabel()}. 14 more people lend on your blocks.</p></div></div>
-      <section class="stack" style="gap:0"><h2 class="lbl" style="margin-bottom:2px">In your bundle <button class="link" data-act="back">Edit</button></h2>${ks.map(irow).join('')}</section>
-      <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow">Each item is covered up to $1,000 while it's with you.</span>${ic('chev',16)}</button>
-    </div>
-    <div class="foot"><button class="btn red split" data-act="go" data-v="checkout"><span>Continue</span><span>$${sub(ks)} / day</span></button></div>`;
+V.bundle = function() {
+ const ks=selected(),valid=ks.filter(k=>!blocked(k)),ls=lendersOf(ks),occ=OCCASIONS[S.occasion];
+ if(!ks.length)return `${topbar('Your bundle')}<div class="body"><h1>No items selected</h1><p>Select a few hosting essentials to create a bundle.</p></div><div class="foot"><button class="btn red" data-act="go" data-v="plan">Choose items</button></div>`;
+ const irow=k=>{
+   if(blocked(k))return `<div class="bundle-line"><span class="grow"><b>${ITEMS[k].short}</b><span class="small muted d">No listings match these filters. Try expanding distance or lowering the rating threshold.</span></span><button class="micro" data-act="remove" data-v="${k}">Remove</button></div>`;
+   const it=itemFor(k),L=LENDERS[it.lender];
+   return `<div class="bundle-line"><span class="thumb">${ART[it.art]}</span><div class="grow stack" style="gap:3px"><b>${title(k)}</b>
+     <span class="small muted">${L.name} · ${it.dist} · ★ ${it.rating}</span>
+     <div class="row" style="gap:5px"><button class="micro accent" data-act="swap" data-v="${k}">Swap</button><button class="micro" data-act="remove" data-v="${k}">Remove</button></div></div><b>$${price(k)}</b></div>`;
+ };
+ const filter=(k,t)=>`<button class="chip pick ${S.priority===k?'on':''}" data-act="priority" data-v="${k}" aria-pressed="${S.priority===k}">${t}</button>`;
+ const radius=v=>`<button class="chip pick ${S.radius===v?'on':''}" data-act="radius" data-v="${v}" aria-pressed="${S.radius===v}">${v} mi</button>`;
+ return `${topbar('Your recommended bundle')}
+  <div class="body">
+   <div class="bundle-intro"><p class="eyebrow">${occ.emoji} Your ${occ.label.toLowerCase()}</p><h3>${S.people} guests · ${dateLabel()}</h3>
+      <p class="small">Built around your $${S.budget} budget, nearby listings, ratings and availability.</p></div>
+   <div class="filter-box"><h2 class="lbl">Optimize for</h2><div class="chips">${filter('balanced','Best overall')}${filter('price','Lowest price')}${filter('nearby','Closest')}${filter('rating','Top rated')}</div>
+     <h2 class="lbl">Maximum distance</h2><div class="chips">${[.5,1,2].map(radius).join('')}</div>
+     <div class="row"><b class="small grow">4.8+ ratings only</b><button class="chip pick ${S.minRating===4.8?'on':''}" data-act="ratingfilter" aria-pressed="${S.minRating===4.8}">${S.minRating===4.8?'On':'Off'}</button></div>
+     <p class="note">Change filters to refresh suggestions for your selected date.</p></div>
+   <section class="stack" style="gap:0"><div class="bundle-total"><span>${ks.length} selected categories</span><strong>$${sub(ks)}</strong></div>${ks.map(irow).join('')}</section>
+   ${ls.length?`<div class="mapbox">${mapSvg(ls)}</div>`:''}
+   <div class="row" style="align-items:flex-start"><span class="ic-badge">${ic('walk',20)}</span><div class="grow">
+    <b>${ls.length} pickup ${ls.length===1?'stop':'stops'} · up to ${maxWalk(ls)} min walk</b>
+    <p class="small muted">${valid.length} items available on ${dateLabel()}. ${sub(ks)>S.budget?'Above your budget: try a cheaper swap or adjust your budget.':'Within your rental budget.'}</p></div></div>
+   <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow">Proposed lender protection is included in every rental.</span>${ic('chev',16)}</button>
+   <p class="note">Prototype: all listings, prices, ratings, distances and availability are illustrative.</p>
+  </div>
+  <div class="foot"><button class="btn red split" data-act="go" data-v="checkout" ${ks.length!==valid.length?'disabled':''}><span>${ks.length!==valid.length?'Adjust filters':'Continue to booking'}</span><span>$${sub(ks)}</span></button></div>`;
+};
+
+V.swap = function() {
+ const k=S.item, chosen=S.swaps[k];
+ const cards=listings(k).map((it,i)=>{
+  const L=LENDERS[it.lender],isChosen=chosen===i,canChoose=eligible(it);
+  return `<div class="swap-card ${isChosen?'on':''}"><span class="thumb">${ART[it.art]}</span>
+   <div class="grow stack" style="gap:5px"><b>${k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:it.name}</b>
+    <span class="small muted">${L.name} · ${it.dist} · ★ ${it.rating} (${it.reviews})</span>
+    <div class="row" style="justify-content:space-between"><b>${itemPrice(k,it)} / night</b>
+      <button class="btn ${isChosen?'dark':'red'} sm" data-act="choose" data-v="${i}" ${!canChoose?'disabled':''}>${!canChoose?'Outside filters':isChosen?'Selected':'Choose'}</button></div></div></div>`;
+ }).join('');
+ return `${topbar('Swap ${ITEMS[k].short.toLowerCase()}')}
+ <div class="body"><div class="stack" style="gap:6px"><h1>Pick what works for you</h1>
+ <p class="small muted">Compare price, distance and ratings. Your total updates when you swap.</p></div>
+ ${cards}<p class="note">All listings, ratings and availability are illustrative.</p></div>`;
 };
 
 V.item = () => {
-  const k = S.item, it = ITEMS[k], L = LENDERS[it.lender], inB = S.need[k];
+  const k = S.item, it = itemFor(k), L = LENDERS[it.lender], inB = S.need[k];
   return `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><span class="grow"></span>
       <button class="ib ${S.fav[k]?'fav-on':''}" data-act="fav" data-v="${k}" aria-label="Save" aria-pressed="${!!S.fav[k]}">${ic('heart',22)}</button>
       <button class="ib" data-act="toast" data-v="Sharing isn't part of this prototype." aria-label="Share">${ic('share',22)}</button></div>
@@ -633,7 +670,7 @@ V.item = () => {
       <div class="hero-img">${ART[it.art]}<span class="badge-ins">${ic('shield',13)} Insured</span><span class="count">1/5</span></div>
       <div class="stack" style="gap:6px">
         <div class="row" style="align-items:flex-start"><h1 class="grow" style="font-size:24px">${title(k)}</h1><span class="pricetag">$${price(k)} / day</span></div>
-        <p class="small muted">★ ${it.rating} (${it.reviews} reviews) · ${it.dist} away${k==='chairs' ? ' · $2 per chair' : ''}</p></div>
+        <p class="small muted">★ ${it.rating} (${it.reviews} reviews) · ${it.dist} away${k==='chairs' ? ` · ${it.per} per chair` : ''}</p></div>
       <div class="chips"><span class="chip">${ic('id',14)} Verified owner</span><span class="chip">${ic('shield',14)} Covered to $1,000</span></div>
       <div class="card row"><span class="av" style="background:${L.color}">${L.initials}</span>
         <div class="grow"><b>${L.name}</b><p class="small muted">Lending since ${L.since} · ${L.reply}</p></div></div>
