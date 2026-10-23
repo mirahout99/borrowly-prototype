@@ -613,38 +613,36 @@ V.home = () => {
     </div>${tabbar('home')}`;
 };
 
-V.plan = function() {
+V.plan = function(){
  const occ=OCCASIONS[S.occasion];
  const opt=k=>{
    const it=ITEMS[k],on=!!S.need[k],suggested=occ.suggest.includes(k);
-   const d=k==='chairs'?`${S.people} seats · from $${itemPrice(k,it)}`:
-     k==='table'?`Seats ${S.people} · from ${it.price}`:k==='dinnerware'?`${S.people} place settings · from ${itemPrice(k,it)}`:`From ${it.price} per night`;
+   const note=k==='chairs'?`${S.people} seats · from $${itemPrice(k,it)}`:
+     k==='dinnerware'?`${S.people} place settings · from $${itemPrice(k,it)}`:`From $${itemPrice(k,it)} / night`;
    return `<button class="opt ${on?'on':''}" data-act="need" data-v="${k}" aria-pressed="${on}">
-     <span class="box">${on?ic('check',16):''}</span><span class="grow"><b>${it.short}</b><span class="small muted d">${d}${suggested?' · Suggested':''}</span></span></button>`;
+     <span class="box">${on?ic('check',16):''}</span><span class="grow"><b>${it.short}</b><span class="small muted d">${note}${suggested?' · Suggested for this event':''}</span></span></button>`;
  };
- return `${topbar('Plan your gathering')}
-   <div class="body">
-     <div class="stack" style="gap:5px"><h1>What's the occasion?</h1><p class="small muted">We'll help find the right things for your plans.</p></div>
-     <div class="occasion-grid">${Object.entries(OCCASIONS).map(([k,o])=>`<button class="occasion ${S.occasion===k?'on':''}" data-act="occasion" data-v="${k}" aria-pressed="${S.occasion===k}"><b>${o.emoji} ${o.label}</b><span class="small muted">${o.suggest.length} suggested categories</span></button>`).join('')}</div>
-     <section class="stack"><h2 class="lbl">Date</h2>
-       <div class="dates">${DATES.map(d=>`<button class="date ${S.date===d.k?'on':''}" data-act="date" data-v="${d.k}" aria-pressed="${S.date===d.k}"><span class="small">${d.dow}</span><b>${d.d}</b><span class="small">Oct</span></button>`).join('')}</div></section>
-     <section class="stack"><h2 class="lbl">Number of guests</h2><div class="stepper">
-       <button class="stp" data-act="people" data-v="-1" aria-label="Fewer guests" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
-       <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div>
-       <button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=8?'disabled':''}>${ic('plus',22)}</button></div></section>
-     <section class="stack"><h2 class="lbl">Total rental budget</h2><div class="stepper">
-       <button class="stp" data-act="budget" data-v="-5" aria-label="Lower budget" ${S.budget<=15?'disabled':''}>${ic('minus',22)}</button>
-       <div class="stp-n"><b>$${S.budget}</b><span class="small muted">before optional delivery</span></div>
-       <button class="stp" data-act="budget" data-v="5" aria-label="Raise budget" ${S.budget>=200?'disabled':''}>${ic('plus',22)}</button></div></section>
-     <section class="stack"><h2 class="lbl">What do you need?</h2><p class="hint">Suggested for a ${occ.label.toLowerCase()} — pick what you'd like to borrow.</p>
-       ${[...occ.suggest,...ORDER.filter(k=>!occ.suggest.includes(k))].map(opt).join('')}</section>
-   </div>
-   <div class="foot"><button class="btn red" data-act="makebundle" ${selected().length?'':'disabled'}>Find my bundle · ${selected().length} categories</button></div>`;
+ const categories=[...occ.suggest,...ORDER.filter(k=>!occ.suggest.includes(k))];
+ return `${topbar('Plan an event')}
+  <div class="body">
+   <div class="stack" style="gap:5px"><h1>What's the occasion?</h1><p class="small muted">Choose an idea or create your own.</p></div>
+   <div class="occasion-grid">${Object.entries(OCCASIONS).map(([k,o])=>`<button class="occasion ${S.occasion===k?'on':''}" data-act="occasion" data-v="${k}" aria-pressed="${S.occasion===k}"><b>${o.emoji} ${o.label}</b></button>`).join('')}</div>
+   ${S.occasion==='custom'?`<div class="stack" style="gap:7px"><label for="customOccasion" class="small"><b>Name your event</b></label><input id="customOccasion" class="custom-field" placeholder="e.g., Friendsgiving, brunch, karaoke night" value="${esc(S.customOccasion)}" maxlength="55"><p class="hint">Choose any items below, or browse the whole marketplace.</p></div>`:''}
+   <section class="stack"><h2 class="lbl">When?</h2><div class="dates">${DATES.map(d=>`<button class="date ${S.date===d.k?'on':''}" data-act="date" data-v="${d.k}" aria-pressed="${S.date===d.k}"><span class="small">${d.dow}</span><b>${d.d}</b><span class="small">Oct</span></button>`).join('')}</div></section>
+   <section class="stack"><h2 class="lbl">Number of guests</h2><div class="stepper"><button class="stp" data-act="people" data-v="-1" aria-label="Fewer guests" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
+     <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div><button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=8?'disabled':''}>${ic('plus',22)}</button></div></section>
+   <section class="stack"><h2 class="lbl">Rental budget</h2><div class="stepper"><button class="stp" data-act="budget" data-v="-5" aria-label="Lower budget" ${S.budget<=15?'disabled':''}>${ic('minus',22)}</button><div class="stp-n"><b>$${S.budget}</b><span class="small muted">before optional delivery</span></div><button class="stp" data-act="budget" data-v="5" aria-label="Raise budget" ${S.budget>=200?'disabled':''}>${ic('plus',22)}</button></div></section>
+   <section class="stack"><h2 class="lbl">What do you need?</h2><p class="hint">${S.occasion==='custom'?'Pick anything that suits your plans.':'Some helpful starting ideas, all optional.'} Select or deselect anything.</p>
+     ${categories.map(opt).join('')}
+     <button class="planner-helper" data-act="browse" data-v="all">${ic('search',18)} Explore all marketplace listings ${ic('chev',15)}</button>
+   </section>
+  </div>
+  <div class="foot"><button class="btn red" data-act="makebundle" ${selected().length?'':'disabled'}>Find my bundle · ${selected().length} items</button></div>`;
 };
 
 V.bundle = function() {
  const ks=selected(),valid=ks.filter(k=>!blocked(k)),ls=lendersOf(ks),occ=OCCASIONS[S.occasion];
- if(!ks.length)return `${topbar('Your bundle')}<div class="body"><h1>No items selected</h1><p>Select a few hosting essentials to create a bundle.</p></div><div class="foot"><button class="btn red" data-act="go" data-v="plan">Choose items</button></div>`;
+ if(!ks.length)return `${topbar('Your bundle')}<div class="body"><h1>No items selected yet</h1><p>Explore the marketplace to add items, or start with an event.</p><button class="btn red" data-act="browse" data-v="all">Browse marketplace</button><button class="btn ghost" data-act="go" data-v="plan">Plan an event</button></div>`;
  const irow=k=>{
    if(blocked(k))return `<div class="bundle-line"><span class="grow"><b>${ITEMS[k].short}</b><span class="small muted d">No listings match these filters. Try expanding distance or lowering the rating threshold.</span></span><button class="micro" data-act="remove" data-v="${k}">Remove</button></div>`;
    const it=itemFor(k),L=LENDERS[it.lender];
@@ -656,13 +654,14 @@ V.bundle = function() {
  const radius=v=>`<button class="chip pick ${S.radius===v?'on':''}" data-act="radius" data-v="${v}" aria-pressed="${S.radius===v}">${v} mi</button>`;
  return `${topbar('Your recommended bundle')}
   <div class="body">
-   <div class="bundle-intro"><p class="eyebrow">${occ.emoji} Your ${occ.label.toLowerCase()}</p><h3>${S.people} guests · ${dateLabel()}</h3>
+   <div class="bundle-intro"><p class="eyebrow">${occ.emoji} Your ${esc(occasionLabel().toLowerCase())}</p><h3>${S.people} guests · ${dateLabel()}</h3>
       <p class="small">Built around your $${S.budget} budget, nearby listings, ratings and availability.</p></div>
    <div class="filter-box"><h2 class="lbl">Optimize for</h2><div class="chips">${filter('balanced','Best overall')}${filter('price','Lowest price')}${filter('nearby','Closest')}${filter('rating','Top rated')}</div>
      <h2 class="lbl">Maximum distance</h2><div class="chips">${[.5,1,2].map(radius).join('')}</div>
      <div class="row"><b class="small grow">4.8+ ratings only</b><button class="chip pick ${S.minRating===4.8?'on':''}" data-act="ratingfilter" aria-pressed="${S.minRating===4.8}">${S.minRating===4.8?'On':'Off'}</button></div>
      <p class="note">Change filters to refresh suggestions for your selected date.</p></div>
-   <section class="stack" style="gap:0"><div class="bundle-total"><span>${ks.length} selected categories</span><strong>$${sub(ks)}</strong></div>${ks.map(irow).join('')}</section>
+   <section class="stack" style="gap:0"><div class="bundle-total"><span>${ks.length} selected categories</span><strong>$${sub(ks)}</strong></div>${ks.map(irow).join('')}
+     <button class="planner-helper" data-act="browse" data-v="all" style="margin-top:12px">${ic('plus',18)} Add another item from marketplace</button></section>
    ${ls.length?`<div class="mapbox">${mapSvg(ls)}</div>`:''}
    <div class="row" style="align-items:flex-start"><span class="ic-badge">${ic('walk',20)}</span><div class="grow">
     <b>${ls.length} pickup ${ls.length===1?'stop':'stops'} · up to ${maxWalk(ls)} min walk</b>
