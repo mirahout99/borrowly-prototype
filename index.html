@@ -773,7 +773,7 @@ V.checkout = () => {
   return `${topbar('Review and pay')}
     <div class="body">
       <div class="card stack" style="gap:12px">
-        <div class="row"><span class="ic-badge">${ic('calendar',18)}</span><div class="grow"><b>${dateLabel()}, 4:30 PM → ${nextLabel()}, 11 AM</b><p class="small muted">1 night · ${OCCASIONS[S.occasion].label.toLowerCase()} for ${S.people}</p></div></div>
+        <div class="row"><span class="ic-badge">${ic('calendar',18)}</span><div class="grow"><b>${dateLabel()}, 4:30 PM → ${nextLabel()}, 11 AM</b><p class="small muted">1 night · ${esc(occasionLabel().toLowerCase())} for ${S.people}</p></div></div>
         <div class="divider"></div>
         ${ks.map(k => `<div class="row small"><span class="thumb sm">${ART[itemFor(k).art]}</span><span class="grow"><b>${title(k)}</b><span class="muted d">${LENDERS[itemFor(k).lender].name}</span></span><b>$${price(k)}</b></div>`).join('')}
       </div>
@@ -816,7 +816,7 @@ V.booked = () => {
       <ol class="tl">
         <li class="done"><span class="dotx">${ic('check',12)}</span><div><b>${firsts(ls)} approved</b><span class="s">Paid $${B.total} · $100 hold, not charged</span></div><time>Now</time></li>
         ${handoff}
-        <li><span class="dotx"></span><div><b>Your ${OCCASIONS[B.occasion||'dinner'].label.toLowerCase()}</b><span class="s">${B.people} people at your place</span></div><time>${d.dow} 7:00 PM</time></li>
+        <li><span class="dotx"></span><div><b>Your ${esc((B.occasion==='custom'?(B.customOccasion||'custom event'):OCCASIONS[B.occasion||'dinner'].label).toLowerCase())}</b><span class="s">${B.people} people at your place</span></div><time>${d.dow} 7:00 PM</time></li>
         <li><span class="dotx"></span><div><b>${B.delivery ? 'Runner collects it all' : 'Return to each neighbor'}</b><span class="s">${B.delivery ? 'Leave it inside your door' : 'Same spots · rate each other'}</span></div><time>${d.next} 11 AM</time></li>
       </ol>
       <div class="soft stack" style="gap:4px"><div class="row" style="gap:6px">${ic('shield',16)}<b class="grow">You're covered</b><span class="small">Included</span></div>
@@ -855,7 +855,7 @@ V.earnings = () => {
   const total = WEEKS.reduce((a, w) => a + w[1], 0);
   const mine = MINE.map(m => `<div class="irow"><span class="thumb sm">${ART[m.art]}</span><span class="grow"><b>${m.name}</b><span class="small muted d">$${m.price} / day · ${m.nights} rentals</span></span><b>$${m.earned}</b></div>`).join('');
   const newRow = S.listed ? `<div class="irow"><span class="thumb sm">${ART.chairs}</span><span class="grow"><b>${esc(S.lname)}</b><span class="small muted d">$${S.lprice} / day · just listed</span></span><span class="chip" style="background:var(--yellow)">New</span></div>` : '';
-  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span><span class="mode">Lending</span></div>
+  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>${marketLink()}<span class="mode">Lending</span></div>
     <div class="body">
       <div class="stack" style="gap:4px"><p class="eyebrow">Your stuff earned</p><div class="big">$${total}</div><p class="small muted">in the last 4 weeks · paid out every Friday</p></div>
       ${S.request ? '' : `<button class="req" data-act="go" data-v="request"><span class="av" style="background:#D9E7C9">AL</span>
@@ -913,10 +913,10 @@ V.list = () => `${topbar('List an item')}
     <div class="foot"><button class="btn red" data-act="publish">Publish listing</button></div>`;
 
 /* ---------- navigation ---------- */
-const FLOW_B = [['home','Home'],['plan','Plan an event'],['bundle','Recommended bundle'],['swap','Swap items'],['item','Item and lender'],['coverage','Coverage'],['checkout','Checkout'],['booked','Booked'],['ret','Return and rate']];
+const FLOW_B = [['home','Home'],['plan','Plan an event'],['bundle','Recommended bundle'],['market','Marketplace'],['item','Item and lender'],['coverage','Coverage'],['checkout','Checkout'],['booked','Booked'],['ret','Return and rate']];
 const FLOW_L = [['earnings','Earnings'],['request','Approve a request'],['list','List an item']];
 const JUMP = {
-  home:['home'], plan:['home','plan'], bundle:['home','plan','bundle'], item:['home','plan','bundle','item'],
+  home:['home'], market:['home','market'], plan:['home','plan'], bundle:['home','plan','bundle'], item:['home','plan','bundle','item'],
   swap:['home','plan','bundle','swap'], coverage:['home','plan','bundle','coverage'], checkout:['home','plan','bundle','checkout'],
   booked:['booked'], ret:['booked','ret'], earnings:['earnings'], request:['earnings','request'], list:['earnings','list'],
 };
@@ -946,13 +946,17 @@ function rerender(){
   cur.innerHTML = V[cur.dataset.screen]();
   const nb = cur.querySelector('.body'); if (nb) nb.scrollTop = st;
 }
-const go = n => { if(n==='bundle')recommend(); stack.push(n); show(n, 'fwd'); };
+const go = n => { stack.push(n); show(n, 'fwd'); };
 const back = () => { if (stack.length > 1) { stack.pop(); show(stack.at(-1), 'back'); } };
-const tab = n => { if (stack.at(-1) === n && stack.length === 1) return; stack = [n]; show(n, 'fade'); };
+const tab = n => {
+ if(n==='market'){S.marketMode='browse';S.marketCat='all';S.marketSearch='';S.preview=null;}
+ if(stack.at(-1)===n&&stack.length===1){rerender();return;}
+ stack=[n];show(n,'fade');
+};
 function ensureBooking(){
   if (S.booked) return;
   const ks = selected().length ? selected() : ['table','chairs'];
-  S.booked = {items:ks, occasion:S.occasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
+  S.booked = {items:ks, occasion:S.occasion, customOccasion:S.customOccasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
 }
 function jump(n){
   if (!JUMP[n]) n = 'home';
@@ -972,25 +976,42 @@ const A = {
   go, back, tab, jump,
   occasion:v=>{ S.occasion=v; S.need=Object.fromEntries(ORDER.map(k=>[k,OCCASIONS[v].defaults.includes(k)])); S.swaps={}; rerender(); },
   budget:v=>{ S.budget=Math.max(15,Math.min(200,S.budget+Number(v))); rerender(); },
-  makebundle:()=>go('bundle'),
+  makebundle:()=>{recommend();go('bundle');},
   priority:v=>{ S.priority=v; recommend(); rerender(); },
   radius:v=>{ S.radius=Number(v); recommend(); rerender(); },
   ratingfilter:()=>{ S.minRating=S.minRating===4.8?0:4.8; recommend(); rerender(); },
-  swap:v=>{ S.item=v; go('swap'); },
+  browse:v=>{
+  S.marketMode='browse';S.marketCat=ORDER.includes(v)?v:'all';S.marketSearch='';S.preview=null;
+  if(cur&&cur.dataset.screen==='market')rerender();else go('market');
+ },
+ swap:v=>{S.item=v;S.marketMode='swap';S.marketCat=v;S.marketSearch='';S.preview=null;go('market');},
+ marketcat:v=>{if(S.marketMode==='swap'&&v!==S.marketCat)S.marketMode='browse';S.marketCat=v;rerender();},
+ marketdetails:v=>{
+  const [k,raw]=v.split(':'),i=Number(raw);if(!ITEMS[k]||!listings(k)[i])return;
+  S.preview={k,index:i};S.item=k;go('item');
+ },
+ marketpick:v=>{
+  const [k,raw]=v.split(':'),i=Number(raw),it=ITEMS[k]&&listings(k)[i];
+  if(!it||!available(it))return;
+  S.need[k]=true;S.swaps[k]=i;S.preview=null;
+  stack=['home','plan','bundle'];show('bundle','fwd');toast(ITEMS[k].short+' added to your bundle');
+ },
+ viewbundle:()=>{S.preview=null;stack=['home','plan','bundle'];show('bundle','fwd');},
+
   choose:v=>{ const i=Number(v),k=S.item,it=listings(k)[i]; if(!it||!eligible(it))return; S.swaps[k]=i; back(); },
   remove:v=>{ S.need[v]=false; delete S.swaps[v]; rerender(); },
-  item: v => { S.item = v; go('item'); },
+  item: v => { S.item = v; S.preview=null; go('item'); },
   toast: v => toast(v, 'info'),
   reset: () => { S = fresh(); stack = ['home']; show('home', cur ? 'fade' : null); },
   fav: v => { S.fav[v] = !S.fav[v]; rerender(); if (S.fav[v]) toast('Saved to your list', 'heart'); },
   date: v => { S.date = v; rerender(); },
   people: v => { S.people = Math.min(8, Math.max(2, S.people + Number(v))); rerender(); },
   need: v => { S.need[v] = !S.need[v]; delete S.swaps[v]; rerender(); },
-  add: v => { S.need[v] = true; toast(`${ITEMS[v].short} added to your bundle`); if (stack.at(-2) === 'bundle') back(); else { stack = ['home','plan','bundle']; show('bundle','fwd'); } },
+  add: v => A.marketpick(v+':'+(Number.isInteger(S.swaps[v])?S.swaps[v]:0)),
   deliv: v => { S.delivery = v === 'runner'; rerender(); },
   pay: () => {
     const ks = selected(), ls = lendersOf(ks);
-    S.booked = {items:ks, occasion:S.occasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
+    S.booked = {items:ks, occasion:S.occasion, customOccasion:S.customOccasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
     S.ret = {}; S.rate = {};
     stack = ['booked']; show('booked', 'fwd');
     toast(`${firsts(ls)} approved your request`);
@@ -1016,7 +1037,15 @@ document.addEventListener('click', e => {
 document.addEventListener('keydown', e => {
   const t = e.target; if ((e.key === 'Enter' || e.key === ' ') && t.getAttribute && t.getAttribute('role') === 'button') { e.preventDefault(); t.click(); }
 });
-document.addEventListener('input', e => { if (e.target.id === 'lname') S.lname = e.target.value; });
+document.addEventListener('input',e=>{
+ if(e.target.id==='lname')S.lname=e.target.value;
+ if(e.target.id==='customOccasion')S.customOccasion=e.target.value;
+ if(e.target.id==='marketSearch'){
+  S.marketSearch=e.target.value;
+  const result=document.getElementById('marketResults');
+  if(result)result.innerHTML=marketMarkup();
+ }
+});
 document.addEventListener('gesturestart', e => e.preventDefault());
 
 /* ---------- side panel ---------- */
