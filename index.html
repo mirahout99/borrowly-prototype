@@ -327,7 +327,7 @@ b{font-weight:700}
       <h2>Why Borrowly works</h2>
       <button class="test" data-act="jump" data-v="plan"><b>Start with your occasion.</b> Plan a dinner, movie night, or game night rather than searching item by item.</button>
       <button class="test" data-act="jump" data-v="bundle"><b>Get a smart bundle.</b> Find nearby essentials based on your guest count, budget, ratings, and availability.</button>
-      <button class="test" data-act="jump" data-v="swap"><b>Make it yours.</b> Swap or remove individual items, and see your total update instantly.</button>
+      <button class="test" data-act="browse" data-v="all"><b>Make it yours.</b> Explore every item, swap lenders, and add or remove items as your plans change.</button>
     </div>
     <button class="reset" data-act="reset">Restart prototype</button>
   </aside>
@@ -711,43 +711,30 @@ V.market = function(){
    </div>${tabbar('market')}`;
 };
 
-V.swap = function() {
- const k=S.item, chosen=S.swaps[k];
- const cards=listings(k).map((it,i)=>{
-  const L=LENDERS[it.lender],isChosen=chosen===i,canChoose=eligible(it);
-  return `<div class="swap-card ${isChosen?'on':''}"><span class="thumb">${ART[it.art]}</span>
-   <div class="grow stack" style="gap:5px"><b>${k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:it.name}</b>
-    <span class="small muted">${L.name} · ${it.dist} · ★ ${it.rating} (${it.reviews})</span>
-    <div class="row" style="justify-content:space-between"><b>$${itemPrice(k,it)} / night</b>
-      <button class="btn ${isChosen?'dark':'red'} sm" data-act="choose" data-v="${i}" ${!canChoose?'disabled':''}>${!canChoose?'Outside filters':isChosen?'Selected':'Choose'}</button></div></div></div>`;
- }).join('');
- return `${topbar('Swap ' + ITEMS[k].short.toLowerCase())}
- <div class="body"><div class="stack" style="gap:6px"><h1>Pick what works for you</h1>
- <p class="small muted">Compare price, distance and ratings. Your total updates when you swap.</p></div>
- ${cards}<p class="note">All listings, ratings and availability are illustrative.</p></div>`;
-};
+V.swap = () => V.market();
 
-V.item = () => {
-  const k = S.item, it = itemFor(k), L = LENDERS[it.lender], inB = S.need[k];
-  return `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><span class="grow"></span>
-      <button class="ib ${S.fav[k]?'fav-on':''}" data-act="fav" data-v="${k}" aria-label="Save" aria-pressed="${!!S.fav[k]}">${ic('heart',22)}</button>
-      <button class="ib" data-act="toast" data-v="Sharing isn't part of this prototype." aria-label="Share">${ic('share',22)}</button></div>
+V.item = function(){
+ const k=S.item, idx=S.preview&&S.preview.k===k?S.preview.index:(Number.isInteger(S.swaps[k])?S.swaps[k]:0);
+ const it=listings(k)[idx]||ITEMS[k], L=LENDERS[it.lender];
+ const inB=!!S.need[k]&&(S.swaps[k]===idx||(!Number.isInteger(S.swaps[k])&&idx===0));
+ const name=k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:k==='dinnerware'?`Dinnerware for ${S.people}`:it.name;
+ const amount=itemPrice(k,it);
+ return `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><span class="grow"></span>${marketLink()}
+      <button class="ib ${S.fav[k]?'fav-on':''}" data-act="fav" data-v="${k}" aria-label="Save" aria-pressed="${!!S.fav[k]}">${ic('heart',22)}</button></div>
     <div class="body">
-      <div class="hero-img">${ART[it.art]}<span class="badge-ins">${ic('shield',13)} Insured</span><span class="count">1/5</span></div>
+      <div class="hero-img">${ART[it.art]}<span class="badge-ins">${ic('shield',13)} Proposed protection</span></div>
       <div class="stack" style="gap:6px">
-        <div class="row" style="align-items:flex-start"><h1 class="grow" style="font-size:24px">${title(k)}</h1><span class="pricetag">$${price(k)} / day</span></div>
-        <p class="small muted">★ ${it.rating} (${it.reviews} reviews) · ${it.dist} away${k==='chairs' ? ` · ${it.per} per chair` : ''}</p></div>
-      <div class="chips"><span class="chip">${ic('id',14)} Verified owner</span><span class="chip">${ic('shield',14)} Covered to $1,000</span></div>
+        <div class="row" style="align-items:flex-start"><h1 class="grow" style="font-size:24px">${name}</h1><span class="pricetag">$${amount} / night</span></div>
+        <p class="small muted">★ ${it.rating} (${it.reviews} reviews) · ${it.dist} away${k==='chairs'?` · $${it.per} per chair`:''}</p></div>
+      <div class="chips"><span class="chip">${ic('id',14)} Verified owner</span><span class="chip">${ic('shield',14)} Protection concept</span></div>
       <div class="card row"><span class="av" style="background:${L.color}">${L.initials}</span>
         <div class="grow"><b>${L.name}</b><p class="small muted">Lending since ${L.since} · ${L.reply}</p></div></div>
-      <section class="stack"><h2 class="lbl">Comes with</h2><div class="chips">${it.comes.map(c => `<span class="chip">${c}</span>`).join('')}</div></section>
+      <section class="stack"><h2 class="lbl">Comes with</h2><div class="chips">${it.comes.map(c=>`<span class="chip">${c}</span>`).join('')}</div></section>
       <section class="stack"><h2 class="lbl">Pickup spot</h2><p class="row" style="gap:6px">${ic('pin',16)} ${L.street} · ${L.walk} min walk</p></section>
-      <section class="stack"><h2 class="lbl">Recent review</h2><blockquote class="review">“${it.review}”<cite>${it.reviewer}</cite></blockquote></section>
-      <button class="link" data-act="go" data-v="coverage" style="align-self:flex-start">How coverage works</button>
+      <section class="stack"><h2 class="lbl">Recent review</h2><blockquote class="review">“${it.review||'A handy rental for the occasion.'}”<cite>${it.reviewer||'Verified borrower'}</cite></blockquote></section>
     </div>
-    <div class="foot">${inB
-      ? `<button class="btn dark" data-act="back">${ic('check',18)} In your bundle</button>`
-      : `<button class="btn red split" data-act="add" data-v="${k}"><span>Add to bundle</span><span>$${price(k)}</span></button>`}</div>`;
+    <div class="foot">${inB?`<button class="btn dark" data-act="viewbundle">${ic('check',18)} In your bundle · View</button>`:
+      `<button class="btn red split" data-act="marketpick" data-v="${k}:${idx}" ${available(it)?'':'disabled'}><span>${S.need[k]?'Replace in bundle':'Add to bundle'}</span><span>$${amount}</span></button>`}</div>`;
 };
 
 V.coverage = () => `${topbar('Coverage')}
