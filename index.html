@@ -182,6 +182,28 @@ b{font-weight:700}
 .irow{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0;text-align:left}
 .irow:last-child{border-bottom:0}
 
+
+/* Occasion-based planner and configurable bundle */
+.occasion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.occasion{display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;background:var(--fill);border:1.5px solid var(--line);border-radius:16px;padding:12px;min-height:74px}
+.occasion b{font-size:13px}.occasion .small{font-size:11px}
+.occasion.on{background:var(--yellow-soft);border-color:var(--red)}
+.hint{font-size:12px;line-height:1.4;color:var(--ink-2)}
+.bundle-intro{background:var(--yellow-soft);border-radius:16px;padding:14px}
+.bundle-intro h3{font-size:19px;margin:4px 0}
+.filter-box{border:1px solid var(--line);border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:9px}
+.filter-box .chips{gap:5px}.filter-box .chip.pick{font-size:11px;padding:6px 9px}
+.bundle-line{display:flex;gap:9px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0}
+.bundle-line:last-child{border:0}.bundle-line .thumb{width:52px;height:52px}
+.micro{border:1px solid var(--line);border-radius:9px;background:var(--white);font-size:12px;font-weight:700;padding:7px 10px}
+.micro.accent{color:var(--red);border-color:var(--red)}
+.bundle-total{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700}
+.bundle-total strong{font-size:23px}
+.swap-card{border:1.5px solid var(--line);border-radius:16px;padding:12px;display:flex;gap:10px}
+.swap-card.on{border-color:var(--red);background:var(--yellow-soft)}
+.swap-card .thumb{width:72px;height:72px}
+.swap-card .btn{height:34px;font-size:12px;padding:0 12px;border-radius:10px}
+.note{font-size:11px;color:var(--ink-3);line-height:1.4}
 /* item */
 .hero-img{position:relative;aspect-ratio:16/10;border-radius:20px;overflow:hidden;max-width:100%;flex:none}
 .badge-ins{position:absolute;top:12px;left:12px;background:var(--yellow);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;display:flex;gap:4px;align-items:center}
@@ -391,6 +413,9 @@ const ART = {
     <rect x="102" y="154" width="12" height="10" fill="#151513"/><rect x="186" y="154" width="12" height="10" fill="#151513"/>`),
 };
 
+
+ART.dinnerware = sv(`<rect width="320" height="200" fill="#F3E4C8"/><rect y="168" width="320" height="32" fill="#E4D2B0"/><ellipse cx="160" cy="124" rx="100" ry="39" fill="#E5BA85"/><ellipse cx="160" cy="112" rx="84" ry="49" fill="#fff"/><ellipse cx="160" cy="112" rx="61" ry="32" fill="#F3E4C8"/><ellipse cx="160" cy="112" rx="39" ry="20" fill="#fff"/><path d="M68 56v100M54 56v44M60 56v44M68 56v44M248 56v100M238 56q-15 40 10 44" stroke="#B97B3F" stroke-width="5" fill="none"/>`);
+ART.games = sv(`<rect width="320" height="200" fill="#E6E9F1"/><rect y="168" width="320" height="32" fill="#CED4E1"/><g transform="translate(63 45) rotate(-8 78 57)"><rect width="160" height="115" rx="10" fill="#E5401D"/><rect x="14" y="14" width="132" height="87" rx="6" fill="#F2EE5C"/><path d="M35 80L67 34l35 42 25-26" stroke="#151513" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="67" cy="34" r="10" fill="#E5401D"/></g><circle cx="235" cy="145" r="18" fill="#fff"/><circle cx="235" cy="145" r="6" fill="#151513"/>`);
 /* ---------- data ---------- */
 const LENDERS = {
   jordan:{name:'Jordan T.', first:'Jordan', initials:'JT', color:'#CFE2F6', since:'2025', reply:'replies in 5 min', street:'W 118th St', walk:4, x:150, y:62},
@@ -408,7 +433,27 @@ const ITEMS = {
   speaker:{name:'Bluetooth speaker', short:'Speaker', price:6, lender:'leo', dist:'0.6 mi', art:'speaker', rating:4.7, reviews:11,
     comes:['Charging cable','12 hr battery'], review:'Loud enough for a full apartment. Battery lasted the whole night.', reviewer:'Ana, Oct 9'},
 };
-const ORDER = ['table','chairs','tv','speaker'];
+const ORDER = ['table','chairs','dinnerware','tv','projector','speaker','games'];
+const OCCASIONS = {
+  dinner:{label:'Dinner party',emoji:'🍽️',defaults:['table','chairs','dinnerware'],suggest:['table','chairs','dinnerware','speaker']},
+  movie:{label:'Movie night',emoji:'🎬',defaults:['tv','speaker'],suggest:['tv','projector','speaker','chairs']},
+  game:{label:'Game night',emoji:'🎲',defaults:['games','chairs'],suggest:['games','table','chairs','speaker']},
+  celebration:{label:'Celebration',emoji:'🎉',defaults:['chairs','speaker'],suggest:['chairs','table','speaker','dinnerware']},
+};
+Object.assign(ITEMS,{
+  dinnerware:{name:'Dinnerware set for 6',short:'Dinnerware',price:8,lender:'priya',dist:'0.5 mi',art:'dinnerware',rating:4.9,reviews:18,comes:['6 plates','6 glasses','Cutlery'],review:'Everything was clean and ready.',reviewer:'Ali, Oct 8'},
+  projector:{name:'Projector + screen',short:'Projector',price:12,lender:'maya',dist:'0.4 mi',art:'projector',rating:4.8,reviews:24,comes:['Screen','HDMI cable'],review:'Perfect for movie night.',reviewer:'Ana, Oct 7'},
+  games:{name:'Board games bundle',short:'Board games',price:5,lender:'leo',dist:'0.6 mi',art:'games',rating:4.8,reviews:15,comes:['Codenames','Uno','Cards'],review:'Great variety for six friends.',reviewer:'Nina, Oct 5'},
+});
+const ALTS = {
+  table:[{name:'Compact folding table',short:'Table',price:10,lender:'leo',dist:'0.6 mi',art:'table',rating:4.7,reviews:12,comes:['Seats 6'],available:['fri23','sat24','fri30','sat31']}],
+  chairs:[{name:'Cushioned folding chairs',short:'Chairs',per:3,lender:'jordan',dist:'0.3 mi',art:'chairs',rating:4.8,reviews:20,comes:['Seat cushions'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  dinnerware:[{name:'Ceramic dinnerware for 6',short:'Dinnerware',price:10,lender:'jordan',dist:'0.3 mi',art:'dinnerware',rating:4.8,reviews:17,comes:['Plates','Glasses','Cutlery'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  tv:[{name:'50-inch Smart TV',short:'TV',price:13,lender:'priya',dist:'0.5 mi',art:'tv',rating:4.7,reviews:14,comes:['Remote','HDMI cable'],available:['fri23','sat24','fri30','sat31']}],
+  projector:[{name:'Mini projector kit',short:'Projector',price:10,lender:'jordan',dist:'0.3 mi',art:'projector',rating:4.7,reviews:10,comes:['HDMI cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  speaker:[{name:'Portable party speaker',short:'Speaker',price:8,lender:'priya',dist:'0.5 mi',art:'speaker',rating:4.9,reviews:31,comes:['Charging cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  games:[{name:'Family games collection',short:'Board games',price:4,lender:'maya',dist:'0.4 mi',art:'games',rating:4.9,reviews:22,comes:['Uno','Exploding Kittens'],available:['fri23','sat24','sun25','fri30','sat31']}],
+};
 const DATES = [
   {k:'fri23', dow:'Fri', next:'Sat', d:23, nd:'Oct 24'}, {k:'sat24', dow:'Sat', next:'Sun', d:24, nd:'Oct 25'},
   {k:'sun25', dow:'Sun', next:'Mon', d:25, nd:'Oct 26'}, {k:'fri30', dow:'Fri', next:'Sat', d:30, nd:'Oct 31'},
@@ -423,7 +468,7 @@ const WEEKS = [['Sep 30',16],['Oct 7',40],['Oct 14',32],['This wk',48]];
 const DAYNAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 const fresh = () => ({
-  date:'sat24', people:6, need:{table:true, chairs:true, tv:false, speaker:false}, delivery:false,
+  date:'sat24', people:6, occasion:'dinner', budget:55, priority:'balanced', radius:1, minRating:0, swaps:{}, need:{table:true,chairs:true,dinnerware:true,tv:false,projector:false,speaker:false,games:false}, delivery:false,
   item:'table', fav:{}, booked:null, ret:{}, rate:{}, request:null,
   listed:false, lname:'4 folding chairs', lcat:'Chairs', lprice:8, ldays:['Fri','Sat','Sun'], lobby:true,
 });
@@ -435,12 +480,38 @@ const day = () => DATES.find(d => d.k === S.date);
 const dateLabel = () => `${day().dow}, Oct ${day().d}`;
 const nextLabel = () => `${day().next}, ${day().nd}`;
 const selected = () => ORDER.filter(k => S.need[k]);
-const price = k => k === 'chairs' ? ITEMS.chairs.per * S.people : ITEMS[k].price;
-const title = k => k === 'chairs' ? `${S.people} folding chairs` : ITEMS[k].name;
-const lendersOf = ks => [...new Set(ks.map(k => ITEMS[k].lender))];
-const sub = ks => ks.reduce((a, k) => a + price(k), 0);
-const fee = ks => Math.max(2, Math.round(sub(ks) * 0.1));
-const maxWalk = ls => Math.max(...ls.map(l => LENDERS[l].walk));
+  const listings = k => [ITEMS[k],...(ALTS[k]||[])];
+  const itemFor = k => listings(k)[Number.isInteger(S.swaps[k])?S.swaps[k]:0] || ITEMS[k];
+  const itemPrice = (k,it) => k === 'chairs' ? it.per*S.people : it.price;
+  const price = k => itemPrice(k,itemFor(k));
+  const title = k => k === 'chairs' ? `${S.people} ${itemFor(k).name.toLowerCase()}` : itemFor(k).name;
+  const blocked = k => S.swaps[k] === null;
+  const lendersOf = ks => [...new Set(ks.filter(k=>!blocked(k)).map(k=>itemFor(k).lender))];
+  const sub = ks => ks.reduce((a,k)=>a+(blocked(k)?0:price(k)),0);
+  const fee = amount => Math.round(amount*15)/100;
+  const available = it => !it.available || it.available.includes(S.date);
+  const eligible = it => available(it) && parseFloat(it.dist)<=S.radius && it.rating>=S.minRating;
+  const candidates = k => listings(k).map((it,index)=>({it,index})).filter(o=>eligible(o.it));
+  function recommend(){
+    const picks={},seen=new Set();let currentTotal=0;
+    selected().forEach(k=>{
+      const opts=candidates(k);
+      if(!opts.length){picks[k]=null;return;}
+      let best=opts[0],bestScore=Infinity;
+      opts.forEach(o=>{
+        const it=o.it,amount=itemPrice(k,it),walk=LENDERS[it.lender].walk;
+        const raw=S.priority==='price'?amount*2+walk*.2:
+          S.priority==='nearby'?walk*2+amount*.15:
+          S.priority==='rating'?(5-it.rating)*40+amount*.15+walk*.2:
+          amount*.35+walk*.55+(5-it.rating)*10-(seen.has(it.lender)?5:0);
+        const over=Math.max(0,currentTotal+amount-S.budget),score=raw+over*(S.priority==='price'?2:.85);
+        if(score<bestScore){bestScore=score;best=o;}
+      });
+      picks[k]=best.index;seen.add(best.it.lender);currentTotal+=itemPrice(k,best.it);
+    });
+    S.swaps=picks;
+  }
+const maxWalk = ls => ls.length ? Math.max(...ls.map(l=>LENDERS[l].walk)) : 0;
 const names = ls => { const n = ls.map(l => LENDERS[l].name); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
 const firsts = ls => { const n = ls.map(l => LENDERS[l].first); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
 
