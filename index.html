@@ -9,7 +9,7 @@
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="theme-color" content="#ffffff">
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
-<link rel="icon" type="image/png" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="borrowly-icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
 </head>
 <body>
@@ -42,7 +42,7 @@ p{margin:0;line-height:1.45}
 .stage::before{content:"";position:fixed;left:0;top:0;bottom:0;width:14px;background:var(--red)}
 .panel{display:flex;flex-direction:column;gap:22px;min-width:0}
 .wordmark{font-family:var(--display);font-weight:800;font-size:48px;letter-spacing:-.035em;line-height:1;display:flex;align-items:center;gap:10px}
-.wordmark i{width:15px;height:15px;border-radius:50%;background:var(--red);flex:none;margin-top:8px}
+.wordmark .brand-mark{width:54px;height:54px;object-fit:contain;flex:none;border-radius:12px}
 .lede{font-size:17px;line-height:1.45;max-width:32ch}
 .meta{font-size:13px;color:var(--ink-2);line-height:1.5}
 .panel h2{font-size:11px;letter-spacing:.11em;text-transform:uppercase;margin:0 0 6px;color:var(--ink-2);font-weight:700}
@@ -98,7 +98,7 @@ body.shot .phone{box-shadow:inset 0 0 0 2px #333}
 .ib .dot{position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--white)}
 .ib.fav-on{color:var(--red)} .ib.fav-on svg{fill:currentColor}
 .logo{background:none;border:0;display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.035em;padding:0 10px}
-.logo i{width:9px;height:9px;border-radius:50%;background:var(--red);margin-top:4px}
+.logo .brand-mark{width:28px;height:28px;object-fit:contain;flex:none;border-radius:7px}
 .body{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 20px 28px;display:flex;flex-direction:column;gap:22px;scrollbar-width:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
 .body::-webkit-scrollbar{display:none}
 .body > *{flex-shrink:0}
@@ -302,8 +302,8 @@ b{font-weight:700}
 <main class="stage">
   <aside class="panel" aria-label="About this prototype">
     <div class="stack" style="gap:12px">
-      <div class="wordmark"><i></i>borrowly</div>
-      <p class="lede">Borrow a table, chairs or a TV from neighbors for the night you host. Tap through the phone, or jump to a screen below.</p>
+      <div class="wordmark"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</div>
+      <p class="lede">Host more in a small space. Choose your occasion, set a budget, and Borrowly puts together a customizable bundle of nearby essentials.</p>
       <p class="meta">HCDIx Team 4 · Crowded City<br>Daniel Engel, Mira Hout, Hunter Sigmund, Shivi Tiwari</p>
     </div>
     <div class="flows">
@@ -311,10 +311,10 @@ b{font-weight:700}
       <div class="flow"><h2>Lender</h2><ol id="flowL"></ol></div>
     </div>
     <div class="tests">
-      <h2>What we're testing</h2>
-      <button class="test" data-act="jump" data-v="coverage"><b>Insurance.</b> Is $1,000 cover per item enough to rent from a stranger?</button>
-      <button class="test" data-act="jump" data-v="checkout"><b>Turnaround.</b> Does a runner fix the pickup-and-return hassle?</button>
-      <button class="test" data-act="jump" data-v="bundle"><b>Lender density.</b> Can one dinner be sourced within a short walk?</button>
+      <h2>Why Borrowly works</h2>
+      <button class="test" data-act="jump" data-v="plan"><b>Start with your occasion.</b> Plan a dinner, movie night, or game night rather than searching item by item.</button>
+      <button class="test" data-act="jump" data-v="bundle"><b>Get a smart bundle.</b> Find nearby essentials based on your guest count, budget, ratings, and availability.</button>
+      <button class="test" data-act="jump" data-v="swap"><b>Make it yours.</b> Swap or remove individual items, and see your total update instantly.</button>
     </div>
     <button class="reset" data-act="reset">Restart prototype</button>
   </aside>
@@ -562,7 +562,7 @@ V.home = () => {
       <span class="nart">${ART[it.art]}<span class="fav ${S.fav[k]?'on':''}" data-act="fav" data-v="${k}" role="button" aria-label="Save ${it.short}">${ic('heart',16)}</span></span>
       <b>${title(k)}</b><span class="row small"><span class="grow"><b>$${price(k)}</b> / day</span><span class="muted">${it.dist}</span></span>
       <span class="small muted">★ ${it.rating} (${it.reviews})</span></button>`; };
-  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><i></i>borrowly</button><span class="grow"></span>
+  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>
       <button class="ib" data-act="go" data-v="request" aria-label="Notifications">${ic('bell',22)}${S.request ? '' : '<span class="dot"></span>'}</button></div>
     <div class="body">
       <div class="stack" style="gap:6px">
@@ -655,7 +655,7 @@ V.swap = function() {
     <div class="row" style="justify-content:space-between"><b>${itemPrice(k,it)} / night</b>
       <button class="btn ${isChosen?'dark':'red'} sm" data-act="choose" data-v="${i}" ${!canChoose?'disabled':''}>${!canChoose?'Outside filters':isChosen?'Selected':'Choose'}</button></div></div></div>`;
  }).join('');
- return `${topbar('Swap ${ITEMS[k].short.toLowerCase()}')}
+ return `${topbar('Swap ' + ITEMS[k].short.toLowerCase())}
  <div class="body"><div class="stack" style="gap:6px"><h1>Pick what works for you</h1>
  <p class="small muted">Compare price, distance and ratings. Your total updates when you swap.</p></div>
  ${cards}<p class="note">All listings, ratings and availability are illustrative.</p></div>`;
@@ -789,7 +789,7 @@ V.earnings = () => {
   const total = WEEKS.reduce((a, w) => a + w[1], 0);
   const mine = MINE.map(m => `<div class="irow"><span class="thumb sm">${ART[m.art]}</span><span class="grow"><b>${m.name}</b><span class="small muted d">$${m.price} / day · ${m.nights} rentals</span></span><b>$${m.earned}</b></div>`).join('');
   const newRow = S.listed ? `<div class="irow"><span class="thumb sm">${ART.chairs}</span><span class="grow"><b>${esc(S.lname)}</b><span class="small muted d">$${S.lprice} / day · just listed</span></span><span class="chip" style="background:var(--yellow)">New</span></div>` : '';
-  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><i></i>borrowly</button><span class="grow"></span><span class="mode">Lending</span></div>
+  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span><span class="mode">Lending</span></div>
     <div class="body">
       <div class="stack" style="gap:4px"><p class="eyebrow">Your stuff earned</p><div class="big">$${total}</div><p class="small muted">in the last 4 weeks · paid out every Friday</p></div>
       ${S.request ? '' : `<button class="req" data-act="go" data-v="request"><span class="av" style="background:#D9E7C9">AL</span>
