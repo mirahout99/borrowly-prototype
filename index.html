@@ -204,6 +204,19 @@ b{font-weight:700}
 .swap-card .thumb{width:72px;height:72px}
 .swap-card .btn{height:34px;font-size:12px;padding:0 12px;border-radius:10px}
 .note{font-size:11px;color:var(--ink-3);line-height:1.4}
+/* Marketplace */
+.top-market{display:inline-flex;align-items:center;gap:5px;background:var(--fill);border:0;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:700}
+.market-search{display:flex;align-items:center;gap:9px;background:var(--fill);border-radius:14px;padding:10px 12px}
+.market-search input{min-width:0;width:100%;border:0;outline:0;background:transparent;font:inherit;font-size:14px;color:var(--ink)}
+.market-cats{display:flex;flex-wrap:wrap;gap:7px}
+.market-results{display:flex;flex-direction:column;gap:10px}
+.market-card{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--line);border-radius:16px;padding:11px}
+.market-card .thumb{width:72px;height:78px;border-radius:12px}
+.market-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.market-banner{display:flex;align-items:center;gap:10px;background:var(--yellow-soft);border-radius:16px;padding:13px}
+.market-empty{background:var(--fill);border-radius:16px;text-align:center;padding:24px 12px}
+.custom-field{width:100%;height:45px;border:1.5px solid var(--line);border-radius:13px;font:inherit;font-size:14px;padding:0 12px}
+.planner-helper{background:var(--yellow-soft);border:1px dashed var(--red);border-radius:13px;padding:13px;display:flex;gap:10px;align-items:center;text-align:left;font-weight:700}
 /* item */
 .hero-img{position:relative;aspect-ratio:16/10;border-radius:20px;overflow:hidden;max-width:100%;flex:none}
 .badge-ins{position:absolute;top:12px;left:12px;background:var(--yellow);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;display:flex;gap:4px;align-items:center}
@@ -433,17 +446,27 @@ const ITEMS = {
   speaker:{name:'Bluetooth speaker', short:'Speaker', price:6, lender:'leo', dist:'0.6 mi', art:'speaker', rating:4.7, reviews:11,
     comes:['Charging cable','12 hr battery'], review:'Loud enough for a full apartment. Battery lasted the whole night.', reviewer:'Ana, Oct 9'},
 };
-const ORDER = ['table','chairs','dinnerware','tv','projector','speaker','games'];
+const ORDER = ['table','chairs','dinnerware','tv','projector','speaker','games','lights','decor','cooler'];
 const OCCASIONS = {
   dinner:{label:'Dinner party',emoji:'🍽️',defaults:['table','chairs','dinnerware'],suggest:['table','chairs','dinnerware','speaker']},
   movie:{label:'Movie night',emoji:'🎬',defaults:['tv','speaker'],suggest:['tv','projector','speaker','chairs']},
   game:{label:'Game night',emoji:'🎲',defaults:['games','chairs'],suggest:['games','table','chairs','speaker']},
   celebration:{label:'Celebration',emoji:'🎉',defaults:['chairs','speaker'],suggest:['chairs','table','speaker','dinnerware']},
+  custom:{label:'Custom event',emoji:'✨',defaults:[],suggest:[]},
 };
 Object.assign(ITEMS,{
   dinnerware:{name:'Dinnerware set for 6',short:'Dinnerware',price:8,lender:'priya',dist:'0.5 mi',art:'dinnerware',rating:4.9,reviews:18,comes:['6 plates','6 glasses','Cutlery'],review:'Everything was clean and ready.',reviewer:'Ali, Oct 8'},
   projector:{name:'Projector + screen',short:'Projector',price:12,lender:'maya',dist:'0.4 mi',art:'projector',rating:4.8,reviews:24,comes:['Screen','HDMI cable'],review:'Perfect for movie night.',reviewer:'Ana, Oct 7'},
   games:{name:'Board games bundle',short:'Board games',price:5,lender:'leo',dist:'0.6 mi',art:'games',rating:4.8,reviews:15,comes:['Codenames','Uno','Cards'],review:'Great variety for six friends.',reviewer:'Nina, Oct 5'},
+});
+
+ART.lights = sv(`<rect width="320" height="200" fill="#202946"/><path d="M8 50Q160 115 312 45" stroke="#F9E6A9" stroke-width="3" fill="none"/>${[25,72,120,168,216,264,300].map((x,i)=>`<g><path d="M${x} ${i%2?76:57}v18" stroke="#e5d5b4" stroke-width="2"/><circle cx="${x}" cy="${i%2?96:77}" r="12" fill="#FFE69B"/></g>`).join('')}`);
+ART.decor = sv(`<rect width="320" height="200" fill="#F6E5E5"/><rect y="168" width="320" height="32" fill="#E9CFCC"/><path d="M50 0v60M270 0v60M160 0v60" stroke="#DDAE81" stroke-width="3"/><circle cx="50" cy="75" r="24" fill="#E5401D"/><circle cx="160" cy="86" r="30" fill="#F2EE5C"/><circle cx="270" cy="75" r="24" fill="#F7A975"/><path d="M50 99L48 142M160 116L163 151M270 99L271 142" stroke="#BA9479" stroke-width="2"/>`);
+ART.cooler = sv(`<rect width="320" height="200" fill="#D9EAF3"/><rect y="166" width="320" height="34" fill="#BFD9E9"/><rect x="62" y="76" width="194" height="99" rx="18" fill="#E5401D"/><rect x="62" y="71" width="194" height="34" rx="10" fill="#FAFAF7"/><path d="M123 75V55a38 38 0 0 1 74 0v20" stroke="#151513" stroke-width="9" fill="none"/><rect x="147" y="119" width="25" height="35" rx="5" fill="#F2EE5C"/>`);
+Object.assign(ITEMS,{
+  lights:{name:'Warm string lights',short:'Lights',price:7,lender:'jordan',dist:'0.3 mi',art:'lights',rating:4.9,reviews:13,comes:['String lights','Wall-safe clips'],review:'Made the room feel festive.',reviewer:'Mara, Oct 9'},
+  decor:{name:'Party decor kit',short:'Decorations',price:9,lender:'priya',dist:'0.5 mi',art:'decor',rating:4.8,reviews:12,comes:['Banners','Decor pieces'],review:'Everything was in great shape.',reviewer:'Chris, Oct 2'},
+  cooler:{name:'Party drink cooler',short:'Cooler',price:8,lender:'maya',dist:'0.4 mi',art:'cooler',rating:4.8,reviews:16,comes:['Lid','Handles'],review:'Kept our drinks cool all night.',reviewer:'Dev, Oct 7'},
 });
 const ALTS = {
   table:[{name:'Compact folding table',short:'Table',price:10,lender:'leo',dist:'0.6 mi',art:'table',rating:4.7,reviews:12,comes:['Seats 6'],available:['fri23','sat24','fri30','sat31']}],
@@ -453,6 +476,9 @@ const ALTS = {
   projector:[{name:'Mini projector kit',short:'Projector',price:10,lender:'jordan',dist:'0.3 mi',art:'projector',rating:4.7,reviews:10,comes:['HDMI cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
   speaker:[{name:'Portable party speaker',short:'Speaker',price:8,lender:'priya',dist:'0.5 mi',art:'speaker',rating:4.9,reviews:31,comes:['Charging cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
   games:[{name:'Family games collection',short:'Board games',price:4,lender:'maya',dist:'0.4 mi',art:'games',rating:4.9,reviews:22,comes:['Uno','Exploding Kittens'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  lights:[{name:'Color party lighting',short:'Lights',price:6,lender:'leo',dist:'0.6 mi',art:'lights',rating:4.7,reviews:9,comes:['Power supply'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  decor:[{name:'Birthday decor pack',short:'Decorations',price:6,lender:'jordan',dist:'0.3 mi',art:'decor',rating:4.9,reviews:8,comes:['Banners','Decor pieces'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  cooler:[{name:'Large insulated cooler',short:'Cooler',price:11,lender:'leo',dist:'0.6 mi',art:'cooler',rating:4.8,reviews:10,comes:['Carry handles'],available:['fri23','sat24','sun25','fri30','sat31']}],
 };
 const DATES = [
   {k:'fri23', dow:'Fri', next:'Sat', d:23, nd:'Oct 24'}, {k:'sat24', dow:'Sat', next:'Sun', d:24, nd:'Oct 25'},
@@ -468,7 +494,7 @@ const WEEKS = [['Sep 30',16],['Oct 7',40],['Oct 14',32],['This wk',48]];
 const DAYNAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
 
 const fresh = () => ({
-  date:'sat24', people:6, occasion:'dinner', budget:55, priority:'balanced', radius:1, minRating:0, swaps:{}, need:{table:true,chairs:true,dinnerware:true,tv:false,projector:false,speaker:false,games:false}, delivery:false,
+  date:'sat24', people:6, occasion:'dinner', customOccasion:'', budget:55, priority:'balanced', radius:1, minRating:0, swaps:{}, need:Object.fromEntries(ORDER.map(k=>[k,false])), marketCat:'all', marketSearch:'', marketMode:'browse', preview:null, delivery:false,
   item:'table', fav:{}, booked:null, ret:{}, rate:{}, request:null,
   listed:false, lname:'4 folding chairs', lcat:'Chairs', lprice:8, ldays:['Fri','Sat','Sun'], lobby:true,
 });
@@ -479,6 +505,7 @@ const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':
 const day = () => DATES.find(d => d.k === S.date);
 const dateLabel = () => `${day().dow}, Oct ${day().d}`;
 const nextLabel = () => `${day().next}, ${day().nd}`;
+const occasionLabel = () => S.occasion==='custom' ? (S.customOccasion.trim()||'Custom event') : OCCASIONS[S.occasion].label;
 const selected = () => ORDER.filter(k => S.need[k]);
   const listings = k => [ITEMS[k],...(ALTS[k]||[])];
   const itemFor = k => listings(k)[Number.isInteger(S.swaps[k])?S.swaps[k]:0] || ITEMS[k];
@@ -515,8 +542,9 @@ const maxWalk = ls => ls.length ? Math.max(...ls.map(l=>LENDERS[l].walk)) : 0;
 const names = ls => { const n = ls.map(l => LENDERS[l].name); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
 const firsts = ls => { const n = ls.map(l => LENDERS[l].first); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
 
-const topbar = (t, right) => `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><div class="ttl">${t}</div>${right || '<span class="spacer"></span>'}</div>`;
-const tabbar = on => `<nav class="tabbar" aria-label="Main">${[['home','home','Home'],['booked','calendar','Bookings'],['earnings','tag','Lend']].map(([k,i,l]) =>
+const marketLink = () => `<button class="top-market" data-act="browse" data-v="all" aria-label="Browse all marketplace listings">${ic('search',16)} Browse</button>`;
+const topbar = (t, right) => `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><div class="ttl">${t}</div>${right===undefined?marketLink():right}</div>`;
+const tabbar = on => `<nav class="tabbar" aria-label="Main">${[['home','home','Home'],['market','search','Market'],['booked','calendar','Bookings'],['earnings','tag','Lend']].map(([k,i,l]) =>
   `<button class="tab ${on===k?'on':''}" data-act="tab" data-v="${k}" ${on===k?'aria-current="page"':''}>${ic(i,23)}${l}</button>`).join('')}</nav>`;
 
 function mapSvg(ls){
@@ -557,20 +585,20 @@ function chart(){
 const V = {};
 
 V.home = () => {
-  const cat = (k, label, icon) => `<button class="cat" data-act="item" data-v="${k}">${ic(icon,24)}${label}</button>`;
+  const cat = (k, label, icon) => `<button class="cat" data-act="browse" data-v="${k}">${ic(icon,24)}${label}</button>`;
   const near = k => { const it = ITEMS[k]; return `<button class="ncard" data-act="item" data-v="${k}">
       <span class="nart">${ART[it.art]}<span class="fav ${S.fav[k]?'on':''}" data-act="fav" data-v="${k}" role="button" aria-label="Save ${it.short}">${ic('heart',16)}</span></span>
       <b>${title(k)}</b><span class="row small"><span class="grow"><b>$${price(k)}</b> / day</span><span class="muted">${it.dist}</span></span>
       <span class="small muted">★ ${it.rating} (${it.reviews})</span></button>`; };
   return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>
-      <button class="ib" data-act="go" data-v="request" aria-label="Notifications">${ic('bell',22)}${S.request ? '' : '<span class="dot"></span>'}</button></div>
+      ${marketLink()}</div>
     <div class="body">
       <div class="stack" style="gap:6px">
         <button class="loc" data-act="toast" data-v="Only Morningside Heights is set up in this prototype.">${ic('pin',16)} Morningside Heights ${ic('chevd',16)}</button>
         <p class="eyebrow">Hi Sam</p>
         <h1>Borrow for the night</h1>
       </div>
-      <button class="search" data-act="go" data-v="plan">${ic('search',18)}<span class="grow">Search tables, chairs, TVs…</span>${ic('sliders',18)}</button>
+      <button class="search" data-act="browse" data-v="all">${ic('search',18)}<span class="grow">Search the marketplace</span>${ic('sliders',18)}</button>
       <div class="hero">
         <div class="stack" style="gap:6px"><h3>Hosting this weekend?</h3>
           <p class="small">Say how many are coming. We'll find a table, chairs and more from neighbors.</p>
@@ -578,8 +606,8 @@ V.home = () => {
         <div class="hero-art">${ART.table}</div>
       </div>
       <section class="stack"><h2 class="lbl">What do you need?</h2>
-        <div class="cats">${cat('tv','TVs','tv')}${cat('table','Tables','table')}${cat('chairs','Chairs','chair')}${cat('speaker','Speakers','speaker')}</div></section>
-      <section class="stack"><h2 class="lbl">Near you <button class="link" data-act="go" data-v="bundle">See map</button></h2>
+        <div class="cats">${cat('tv','TVs','tv')}${cat('table','Tables','table')}${cat('chairs','Chairs','chair')}${cat('speaker','Speakers','speaker')}</div><button class="link" data-act="browse" data-v="all" style="align-self:flex-start">See all 10 categories →</button></section>
+      <section class="stack"><h2 class="lbl">Near you <button class="link" data-act="browse" data-v="all">Browse all</button></h2>
         <div class="near">${near('tv')}${near('table')}</div></section>
       <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow"><b>Every rental is insured up to $1,000.</b> Neighbors are ID-verified.</span>${ic('chev',16)}</button>
     </div>${tabbar('home')}`;
