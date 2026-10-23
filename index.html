@@ -652,7 +652,7 @@ V.swap = function() {
   return `<div class="swap-card ${isChosen?'on':''}"><span class="thumb">${ART[it.art]}</span>
    <div class="grow stack" style="gap:5px"><b>${k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:it.name}</b>
     <span class="small muted">${L.name} · ${it.dist} · ★ ${it.rating} (${it.reviews})</span>
-    <div class="row" style="justify-content:space-between"><b>${itemPrice(k,it)} / night</b>
+    <div class="row" style="justify-content:space-between"><b>$${itemPrice(k,it)} / night</b>
       <button class="btn ${isChosen?'dark':'red'} sm" data-act="choose" data-v="${i}" ${!canChoose?'disabled':''}>${!canChoose?'Outside filters':isChosen?'Selected':'Choose'}</button></div></div></div>`;
  }).join('');
  return `${topbar('Swap ' + ITEMS[k].short.toLowerCase())}
