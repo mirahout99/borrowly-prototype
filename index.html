@@ -588,7 +588,7 @@ V.home = () => {
   const cat = (k, label, icon) => `<button class="cat" data-act="browse" data-v="${k}">${ic(icon,24)}${label}</button>`;
   const near = k => { const it = ITEMS[k]; return `<button class="ncard" data-act="item" data-v="${k}">
       <span class="nart">${ART[it.art]}<span class="fav ${S.fav[k]?'on':''}" data-act="fav" data-v="${k}" role="button" aria-label="Save ${it.short}">${ic('heart',16)}</span></span>
-      <b>${title(k)}</b><span class="row small"><span class="grow"><b>$${price(k)}</b> / day</span><span class="muted">${it.dist}</span></span>
+      <b>${it.name}</b><span class="row small"><span class="grow"><b>${itemPrice(k,it)}</b> / day</span><span class="muted">${it.dist}</span></span>
       <span class="small muted">★ ${it.rating} (${it.reviews})</span></button>`; };
   return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>
       ${marketLink()}</div>
@@ -681,7 +681,7 @@ const marketMarkup = function(){
  });
  if(!entries.length)return `<div class="market-empty"><b>No matching items</b><p class="small muted d">Try another keyword or choose All items.</p><button class="btn ghost sm" data-act="marketcat" data-v="all" style="margin:12px auto 0">View all items</button></div>`;
  return entries.map(({k,it,i})=>{
-   const inBundle=!!S.need[k]&&(S.swaps[k]===i||(!Number.isInteger(S.swaps[k])&&i===0));
+   const inBundle=!!S.need[k]&&!blocked(k)&&(S.swaps[k]===i||(!Number.isInteger(S.swaps[k])&&i===0));
    const availableNow=available(it),L=LENDERS[it.lender];
    const verb=!availableNow?'Unavailable':inBundle?'In bundle':S.marketMode==='swap'&&k===S.marketCat?'Swap in':S.need[k]?'Replace item':'Add to bundle';
    return `<div class="market-card"><span class="thumb">${ART[it.art]}</span>
@@ -716,7 +716,7 @@ V.swap = () => V.market();
 V.item = function(){
  const k=S.item, idx=S.preview&&S.preview.k===k?S.preview.index:(Number.isInteger(S.swaps[k])?S.swaps[k]:0);
  const it=listings(k)[idx]||ITEMS[k], L=LENDERS[it.lender];
- const inB=!!S.need[k]&&(S.swaps[k]===idx||(!Number.isInteger(S.swaps[k])&&idx===0));
+ const inB=!!S.need[k]&&!blocked(k)&&(S.swaps[k]===idx||(!Number.isInteger(S.swaps[k])&&idx===0));
  const name=k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:k==='dinnerware'?`Dinnerware for ${S.people}`:it.name;
  const amount=itemPrice(k,it);
  return `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><span class="grow"></span>${marketLink()}
@@ -987,7 +987,7 @@ const A = {
 
   choose:v=>{ const i=Number(v),k=S.item,it=listings(k)[i]; if(!it||!eligible(it))return; S.swaps[k]=i; back(); },
   remove:v=>{ S.need[v]=false; delete S.swaps[v]; rerender(); },
-  item: v => { S.item = v; S.preview=null; go('item'); },
+  item: v => { S.item=v; S.preview={k:v,index:0}; go('item'); },
   toast: v => toast(v, 'info'),
   reset: () => { S = fresh(); stack = ['home']; show('home', cur ? 'fade' : null); },
   fav: v => { S.fav[v] = !S.fav[v]; rerender(); if (S.fav[v]) toast('Saved to your list', 'heart'); },
