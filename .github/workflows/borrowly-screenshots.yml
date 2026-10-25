@@ -1,0 +1,72 @@
+name: Capture Borrowly Screenshots
+
+on:
+  push:
+    branches: [borrowly-real-app]
+    paths:
+      - '.github/workflows/borrowly-screenshots.yml'
+      - 'scripts/capture-screenshots.cjs'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  capture:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install browser automation
+        run: npm install --no-save playwright-core@1.56.1
+      - name: Capture every screen in the original iPhone layout
+        run: node scripts/capture-screenshots.cjs
+      - name: Prepare contact sheet and archive
+        run: |
+          python3 -m pip install --quiet Pillow
+          python3 - <<'PY'
+          import json,zipfile
+          from pathlib import Path
+          from PIL import Image,ImageDraw,ImageFont
+          root=Path('screenshots')
+          items=json.loads((root/'manifest.json').read_text())['screens']
+          card_w,card_h=306,640
+          gap=22
+          title_h=56
+          cols=4
+          rows=(len(items)+cols-1)//cols
+          sheet=Image.new('RGB',(gap+(card_w+gap)*cols,gap+(card_h+title_h+gap)*rows),'#f8f7f1')
+          d=ImageDraw.Draw(sheet)
+          try:
+            font=ImageFont.truetype('/usr/share/fonts/truetype/dejavu/DejaVuSans-Bold.ttf',18)
+          except OSError:
+            font=ImageFont.load_default()
+          for i,item in enumerate(items):
+            x=gap+(i%cols)*(card_w+gap)
+            y=gap+(i//cols)*(card_h+title_h+gap)
+            d.text((x+4,y),item['label'],font=font,fill='#161613')
+            with Image.open(root/'phone'/(item['slug']+'.png')) as im:
+              im.thumbnail((card_w,card_h),Image.Resampling.LANCZOS)
+              sheet.paste(im,(x+(card_w-im.width)//2,y+title_h))
+          sheet.save(root/'Borrowly-contact-sheet.png',optimize=True)
+          with zipfile.ZipFile(root/'Borrowly-all-screens.zip','w',compression=zipfile.ZIP_DEFLATED,compresslevel=7) as z:
+            for f in sorted(root.rglob('*')):
+              if f.is_file() and f.name != 'Borrowly-all-screens.zip':
+                z.write(f,arcname=str(f.relative_to(root)))
+          print('Prepared screenshots and ZIP archive')
+          PY
+      - name: Upload download bundle
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: borrowly-screenshots
+          path: screenshots/
+          if-no-files-found: warn
+      - name: Publish screenshots on this branch
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add screenshots/
+          if ! git diff --cached --quiet; then
+            git commit -m 'Publish presentation-ready Borrowly screenshots'
+            git push
+          fi
