@@ -1,0 +1,53 @@
+{
+  "screens": [
+    {
+      "slug": "01-home",
+      "label": "Home"
+    },
+    {
+      "slug": "02-plan",
+      "label": "Plan an event"
+    },
+    {
+      "slug": "03-bundle",
+      "label": "Recommended bundle"
+    },
+    {
+      "slug": "04-market",
+      "label": "Marketplace"
+    },
+    {
+      "slug": "05-item",
+      "label": "Item details"
+    },
+    {
+      "slug": "06-coverage",
+      "label": "Coverage"
+    },
+    {
+      "slug": "07-checkout",
+      "label": "Checkout"
+    },
+    {
+      "slug": "08-booked",
+      "label": "Booking confirmation"
+    },
+    {
+      "slug": "09-return",
+      "label": "Return and rate"
+    },
+    {
+      "slug": "10-earnings",
+      "label": "Lender earnings"
+    },
+    {
+      "slug": "11-request",
+      "label": "Lender request"
+    },
+    {
+      "slug": "12-list",
+      "label": "List an item"
+    }
+  ],
+  "imageFailures": []
+}
