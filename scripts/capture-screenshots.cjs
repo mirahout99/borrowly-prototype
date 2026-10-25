@@ -26,7 +26,7 @@ const path = require('path');
     ['12-list','List an item','list']
   ];
   const choose = async (name) => {
-    const nav = page.locator('.panel [data-act="jump"][data-v="'+name+'"]');
+    const nav = page.locator('.panel .flow [data-act="jump"][data-v="'+name+'"]');
     await nav.click();
     await page.waitForSelector('.view[data-screen="'+name+'"]', {timeout:10000});
     await page.waitForTimeout(220);
