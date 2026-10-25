@@ -11,9 +11,10 @@
 <link rel="apple-touch-icon" href="apple-touch-icon.png">
 <link rel="icon" type="image/svg+xml" href="borrowly-icon.svg">
 <link rel="manifest" href="manifest.webmanifest">
+<title>Borrowly | Rent what you need, from people nearby</title>
 </head>
 <body>
-<title>Borrowly Prototype</title>
+
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
@@ -310,29 +311,24 @@ b{font-weight:700}
 @keyframes fadeIn{from{opacity:0}}
 @keyframes fadeOut{to{opacity:0}}
 @media (prefers-reduced-motion:reduce){.in-r,.out-l,.in-l,.out-r,.in-f,.out-f{animation-duration:1ms}.toast{transition:none}}
+
+/* Product app presentation: no demo panel or imitation device hardware. */
+body{background:#f5f5f2}
+.stage,body.full .stage{display:flex;align-items:stretch;justify-content:center;gap:0;width:100%;min-height:100dvh;height:100dvh;padding:0}
+.stage::before,body.full .stage::before{display:none}
+.holder,body.full .holder{width:100%;max-width:480px;height:100dvh;flex:none}
+.phone,body.full .phone{width:100%;height:100%;padding:0;transform:none;border:0;border-radius:0;background:#fff;box-shadow:none}
+.screen,body.full .screen{width:100%;height:100%;border-radius:0;--top:0px;--bottom:max(8px,env(safe-area-inset-bottom,0px))}
+.island,.sbar,.homebar,body.full .island,body.full .sbar,body.full .homebar{display:none}
+.listing-photo{display:block;width:100%;height:100%;object-fit:cover;object-position:center;background:#efeee9}
+.thumb,.hero-art,.hero-img,.nart,.slot{background:#eeece5}
+@media(min-width:600px){.screen{box-shadow:0 0 0 1px #e7e7e2,0 10px 34px rgba(25,25,20,.06)}}
+@media(max-width:520px){.holder,body.full .holder{max-width:none}}
+
 </style>
 
 <main class="stage">
-  <aside class="panel" aria-label="About this prototype">
-    <div class="stack" style="gap:12px">
-      <div class="wordmark"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</div>
-      <p class="lede">Host more in a small space. Choose your occasion, set a budget, and Borrowly puts together a customizable bundle of nearby essentials.</p>
-      <p class="meta">HCDIx Team 4 · Crowded City<br>Daniel Engel, Mira Hout, Hunter Sigmund, Shivi Tiwari</p>
-    </div>
-    <div class="flows">
-      <div class="flow"><h2>Borrower</h2><ol id="flowB"></ol></div>
-      <div class="flow"><h2>Lender</h2><ol id="flowL"></ol></div>
-    </div>
-    <div class="tests">
-      <h2>Why Borrowly works</h2>
-      <button class="test" data-act="jump" data-v="plan"><b>Start with your occasion.</b> Plan a dinner, movie night, or game night rather than searching item by item.</button>
-      <button class="test" data-act="jump" data-v="bundle"><b>Get a smart bundle.</b> Find nearby essentials based on your guest count, budget, ratings, and availability.</button>
-      <button class="test" data-act="browse" data-v="all"><b>Make it yours.</b> Explore every item, swap lenders, and add or remove items as your plans change.</button>
-    </div>
-    <button class="reset" data-act="reset">Restart prototype</button>
-  </aside>
-
-  <div class="holder" id="holder">
+<div class="holder" id="holder">
     <div class="phone">
       <div class="screen" id="screen">
         <div class="sbar" aria-hidden="true"><span>9:41</span>
@@ -457,7 +453,7 @@ const OCCASIONS = {
 Object.assign(ITEMS,{
   dinnerware:{name:'Dinnerware set for 6',short:'Dinnerware',price:8,lender:'priya',dist:'0.5 mi',art:'dinnerware',rating:4.9,reviews:18,comes:['6 plates','6 glasses','Cutlery'],review:'Everything was clean and ready.',reviewer:'Ali, Oct 8'},
   projector:{name:'Projector + screen',short:'Projector',price:12,lender:'maya',dist:'0.4 mi',art:'projector',rating:4.8,reviews:24,comes:['Screen','HDMI cable'],review:'Perfect for movie night.',reviewer:'Ana, Oct 7'},
-  games:{name:'Board games bundle',short:'Board games',price:5,lender:'leo',dist:'0.6 mi',art:'games',rating:4.8,reviews:15,comes:['Codenames','Uno','Cards'],review:'Great variety for six friends.',reviewer:'Nina, Oct 5'},
+  games:{name:'Board games bundle',short:'Board games',price:5,lender:'leo',dist:'0.6 mi',art:'games',rating:4.8,reviews:15,comes:['Catan','Splendor','Uno'],review:'Great variety for six friends.',reviewer:'Nina, Oct 5'},
 });
 
 ART.lights = sv(`<rect width="320" height="200" fill="#202946"/><path d="M8 50Q160 115 312 45" stroke="#F9E6A9" stroke-width="3" fill="none"/>${[25,72,120,168,216,264,300].map((x,i)=>`<g><path d="M${x} ${i%2?76:57}v18" stroke="#e5d5b4" stroke-width="2"/><circle cx="${x}" cy="${i%2?96:77}" r="12" fill="#FFE69B"/></g>`).join('')}`);
@@ -479,6 +475,33 @@ ART.gamesFamily = sv("<rect width=\"320\" height=\"200\" fill=\"#FFF1CF\"/><rect
 ART.lightsColor = sv("<rect width=\"320\" height=\"200\" fill=\"#1F2049\"/><rect y=\"170\" width=\"320\" height=\"30\" fill=\"#34356D\"/><path d=\"M57 29q106 67 211 0\" stroke=\"#F5F1DF\" stroke-width=\"3\" fill=\"none\"/><g><path d=\"M75 49v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"75\" cy=\"69\" r=\"12\" fill=\"#FA78CD\"/><circle cx=\"75\" cy=\"69\" r=\"22\" fill=\"#FA78CD\" opacity=\".2\"/></g><g><path d=\"M111 60v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"111\" cy=\"80\" r=\"12\" fill=\"#7DD9FC\"/><circle cx=\"111\" cy=\"80\" r=\"22\" fill=\"#7DD9FC\" opacity=\".2\"/></g><g><path d=\"M149 71v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"149\" cy=\"91\" r=\"12\" fill=\"#F3DC74\"/><circle cx=\"149\" cy=\"91\" r=\"22\" fill=\"#F3DC74\" opacity=\".2\"/></g><g><path d=\"M187 83v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"187\" cy=\"103\" r=\"12\" fill=\"#B196FF\"/><circle cx=\"187\" cy=\"103\" r=\"22\" fill=\"#B196FF\" opacity=\".2\"/></g><g><path d=\"M224 68v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"224\" cy=\"88\" r=\"12\" fill=\"#FF8E72\"/><circle cx=\"224\" cy=\"88\" r=\"22\" fill=\"#FF8E72\" opacity=\".2\"/></g><g><path d=\"M258 53v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"258\" cy=\"73\" r=\"12\" fill=\"#74F5C8\"/><circle cx=\"258\" cy=\"73\" r=\"22\" fill=\"#74F5C8\" opacity=\".2\"/></g><rect x=\"77\" y=\"130\" width=\"166\" height=\"19\" rx=\"7\" fill=\"#4A4E78\"/><path d=\"M87 138h146\" stroke=\"#FC79CF\" stroke-width=\"6\"/><path d=\"M94 148l-18 19M226 148l18 19\" stroke=\"#777AB2\" stroke-width=\"5\"/>");
 ART.decorBirthday = sv("<rect width=\"320\" height=\"200\" fill=\"#FBE1E8\"/><rect y=\"172\" width=\"320\" height=\"28\" fill=\"#F0C6D2\"/><path d=\"M0 22q160 70 320 0\" stroke=\"#D9A08E\" stroke-width=\"3\" fill=\"none\"/><path d=\"M23 28h26l-13 30z\" fill=\"#F2CE61\"/><path d=\"M65 38h26l-13 30z\" fill=\"#F38A9B\"/><path d=\"M107 45h26l-13 30z\" fill=\"#91C5C0\"/><path d=\"M149 48h26l-13 30z\" fill=\"#E9A5C6\"/><path d=\"M191 45h26l-13 30z\" fill=\"#F2CE61\"/><path d=\"M233 38h26l-13 30z\" fill=\"#F38A9B\"/><path d=\"M275 28h26l-13 30z\" fill=\"#91C5C0\"/><ellipse cx=\"157\" cy=\"164\" rx=\"94\" ry=\"15\" fill=\"#D9A7A6\"/><rect x=\"90\" y=\"119\" width=\"139\" height=\"40\" rx=\"11\" fill=\"#F5BFCC\"/><path d=\"M90 125q13 18 25 0q14 18 27 0q14 18 27 0q14 18 27 0q16 18 33 0\" stroke=\"#fff\" stroke-width=\"9\" fill=\"none\"/><rect x=\"108\" y=\"99\" width=\"105\" height=\"29\" rx=\"7\" fill=\"#FFE3A9\"/><path d=\"M108 112q21 14 35 0q19 15 35 0q20 15 35 0\" stroke=\"#F4ABC7\" stroke-width=\"6\" fill=\"none\"/><g><rect x=\"132\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#78C5BE\"/><path d=\"M134 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><g><rect x=\"161\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#F29DAB\"/><path d=\"M163 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><g><rect x=\"190\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#9A8FE0\"/><path d=\"M192 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><circle cx=\"49\" cy=\"108\" r=\"18\" fill=\"#EC7898\"/><path d=\"M49 126l-7 41\" stroke=\"#BE8294\" stroke-width=\"2\"/><circle cx=\"264\" cy=\"90\" r=\"21\" fill=\"#F4C558\"/><path d=\"M264 111l6 56\" stroke=\"#C8A46C\" stroke-width=\"2\"/>");
 ART.coolerLarge = sv("<rect width=\"320\" height=\"200\" fill=\"#DBE6F4\"/><rect y=\"174\" width=\"320\" height=\"26\" fill=\"#C1D5E8\"/><ellipse cx=\"160\" cy=\"170\" rx=\"114\" ry=\"16\" fill=\"#A6BDD1\"/><rect x=\"65\" y=\"62\" width=\"194\" height=\"112\" rx=\"18\" fill=\"#F5F7F6\" stroke=\"#93ACBA\" stroke-width=\"4\"/><rect x=\"65\" y=\"118\" width=\"194\" height=\"56\" rx=\"15\" fill=\"#7FA4B5\"/><rect x=\"62\" y=\"50\" width=\"201\" height=\"29\" rx=\"10\" fill=\"#FAFBF9\" stroke=\"#93ACBA\" stroke-width=\"4\"/><path d=\"M59 91h-18v42h18M266 91h18v42h-18\" stroke=\"#3B4954\" stroke-width=\"9\" fill=\"none\" stroke-linejoin=\"round\"/><rect x=\"146\" y=\"83\" width=\"29\" height=\"23\" rx=\"5\" fill=\"#D3DEE4\" stroke=\"#91AAB8\" stroke-width=\"2\"/><rect x=\"157\" y=\"126\" width=\"11\" height=\"20\" rx=\"3\" fill=\"#E0F0F4\"/><rect x=\"142\" y=\"142\" width=\"40\" height=\"10\" rx=\"5\" fill=\"#F3F7FA\"/><circle cx=\"98\" cy=\"158\" r=\"8\" fill=\"#415B69\"/><circle cx=\"229\" cy=\"158\" r=\"8\" fill=\"#415B69\"/>");
+
+/* Photo assets: Unsplash / Pexels, free license. These are representative stock photos. */
+const LISTING_PHOTOS = {
+  table: ['https://images.unsplash.com/photo-1740759546556-ff8aaf35ecf9?auto=format&fit=crop&w=960&q=82', 'Wooden dining table in a cozy dining room'],
+  tableCompact: ['https://images.unsplash.com/photo-1558395005-21408ae65920?auto=format&fit=crop&w=960&q=82', 'Compact folding bistro table and chairs'],
+  chairs: ['https://images.unsplash.com/photo-1553110503-b4388ef57dbe?auto=format&fit=crop&w=960&q=82', 'Stack of folding chairs'],
+  chairsCushioned: ['https://images.unsplash.com/photo-1521925141188-e43e549ca97d?auto=format&fit=crop&w=960&q=82', 'White wooden folding chairs'],
+  dinnerware: ['https://images.unsplash.com/photo-1696929256270-da19e4ba911a?auto=format&fit=crop&w=960&q=82', 'Plates and glasses set for dinner'],
+  dinnerwareCeramic: ['https://images.unsplash.com/photo-1737681707230-04eebda96529?auto=format&fit=crop&w=960&q=82', 'Stacked ceramic dinner plates'],
+  tv: ['https://images.unsplash.com/photo-1735078254602-b7818942c324?auto=format&fit=crop&w=960&q=82', 'Large flat-screen TV in a living room'],
+  tv50: ['https://images.unsplash.com/photo-1712928247899-2932f4c7dea3?auto=format&fit=crop&w=960&q=82', 'Flat-screen TV in a comfortable living room'],
+  projector: ['https://images.unsplash.com/photo-1637656375538-9dfe600ccfd2?auto=format&fit=crop&w=960&q=82', 'Portable white projector'],
+  projectorMini: ['https://images.unsplash.com/photo-1638154320388-93039efa870b?auto=format&fit=crop&w=960&q=82', 'Mini projector with remote'],
+  speaker: ['https://images.unsplash.com/photo-1502556112530-246c3be76309?auto=format&fit=crop&w=960&q=82', 'Bluetooth speaker on a table'],
+  speakerParty: ['https://images.unsplash.com/photo-1732229033839-c76b4071c449?auto=format&fit=crop&w=960&q=82', 'Portable party speaker'],
+  games: ['https://images.unsplash.com/photo-1769288361254-abb4783a6070?auto=format&fit=crop&w=960&q=82', 'Catan and Splendor board game boxes'],
+  gamesFamily: ['https://images.unsplash.com/photo-1769288361029-187caa2a88a3?auto=format&fit=crop&w=960&q=82', 'Collection of family board games'],
+  lights: ['https://images.unsplash.com/photo-1780337675943-f63d92324e7b?auto=format&fit=crop&w=960&q=82', 'Warm string lights over a gathering area'],
+  lightsColor: ['https://images.unsplash.com/photo-1767457393612-ccaa7528c482?auto=format&fit=crop&w=960&q=82', 'Colorful party bunting and string lights'],
+  decor: ['https://images.unsplash.com/photo-1767070807074-67d5db511d78?auto=format&fit=crop&w=960&q=82', 'Party decoration and balloon arches'],
+  decorBirthday: ['https://images.unsplash.com/photo-1755704282718-1afe3790082b?auto=format&fit=crop&w=960&q=82', 'Birthday party decorations and balloons'],
+  cooler: ['https://images.pexels.com/photos/8980722/pexels-photo-8980722.jpeg?auto=compress&cs=tinysrgb&w=960', 'Cooler full of ice and chilled bottled water'],
+  coolerLarge: ['https://images.pexels.com/photos/33206680/pexels-photo-33206680/free-photo-of-refreshing-bottled-water-in-yellow-cooler.jpeg?auto=compress&cs=tinysrgb&w=960', 'Large insulated drinks cooler']
+};
+for (const [key, [src, alt]] of Object.entries(LISTING_PHOTOS)) {
+  ART[key] = `<img class="listing-photo" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
+}
 
 const ALTS = {
   table:[{name:'Compact folding table',short:'Table',price:10,lender:'leo',dist:'0.6 mi',art:'tableCompact',rating:4.7,reviews:12,comes:['Seats 6'],available:['fri23','sat24','fri30','sat31']}],
@@ -606,7 +629,7 @@ V.home = () => {
       ${marketLink()}</div>
     <div class="body">
       <div class="stack" style="gap:6px">
-        <button class="loc" data-act="toast" data-v="Only Morningside Heights is set up in this prototype.">${ic('pin',16)} Morningside Heights ${ic('chevd',16)}</button>
+        <button class="loc" data-act="toast" data-v="Discover items near Morningside Heights.">${ic('pin',16)} Morningside Heights ${ic('chevd',16)}</button>
         <p class="eyebrow">Hi Sam</p>
         <h1>Borrow for the night</h1>
       </div>
@@ -679,7 +702,7 @@ V.bundle = function() {
     <b>${ls.length} pickup ${ls.length===1?'stop':'stops'} · up to ${maxWalk(ls)} min walk</b>
     <p class="small muted">${valid.length} items available on ${dateLabel()}. ${sub(ks)>S.budget?'Above your budget: try a cheaper swap or adjust your budget.':'Within your rental budget.'}</p></div></div>
    <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow">Proposed lender protection is included in every rental.</span>${ic('chev',16)}</button>
-   <p class="note">Prototype: all listings, prices, ratings, distances and availability are illustrative.</p>
+   
   </div>
   <div class="foot"><button class="btn red split" data-act="go" data-v="checkout" ${ks.length!==valid.length?'disabled':''}><span>${ks.length!==valid.length?'Adjust filters':'Continue to booking'}</span><span>$${sub(ks)}</span></button></div>`;
 };
@@ -719,7 +742,7 @@ V.market = function(){
      <div class="stack" style="gap:8px"><h2 class="lbl">Categories</h2>
        <div class="market-cats">${[['all','All items'],...ORDER.map(k=>[k,ITEMS[k].short])].map(([category,label])=>`<button class="chip pick ${S.marketCat===category?'on':''}" data-act="marketcat" data-v="${category}" aria-pressed="${S.marketCat===category}">${label}</button>`).join('')}</div></div>
      <div class="stack"><h2 class="lbl">Available listings</h2><div class="market-results" id="marketResults">${marketMarkup()}</div></div>
-     <p class="note">Listings, reviews, availability, and prices are illustrative for this prototype.</p>
+     
    </div>${tabbar('market')}`;
 };
 
@@ -761,7 +784,7 @@ V.coverage = () => `${topbar('Coverage')}
       </div>
       <div class="card stack"><b>If something goes wrong</b>
         <ol class="steps"><li>Report it in the app within 48 hours.</li><li>We compare the pickup and return photos.</li><li>The owner is paid within 5 days. You pay nothing.</li></ol></div>
-      <p class="small muted">Prototype: coverage amounts are placeholders we're testing with customers.</p>
+      
     </div>
     <div class="foot"><button class="btn ghost" data-act="back">Got it</button></div>`;
 
@@ -822,8 +845,8 @@ V.booked = () => {
         <p class="small">Damage protection up to $1,000 per item. Everyone involved is ID-verified.</p></div>
       <div class="card row"><span class="ic-badge">${ic('key',18)}</span><span class="grow small muted">${B.delivery ? 'Delivery code' : 'Pickup code'}</span><b class="code">4821</b></div>
       <div class="row" style="align-items:flex-start;gap:10px">${msg}</div>
-      <div class="row" style="gap:8px"><button class="btn ghost sm grow" data-act="toast" data-v="Chat isn't part of this prototype.">${ic('msg',16)} Message</button>
-        <button class="btn ghost sm grow" data-act="toast" data-v="Directions open in Maps in the real app.">${ic('nav',16)} Directions</button></div>
+      <div class="row" style="gap:8px"><button class="btn ghost sm grow" data-act="toast" data-v="Messaging is not available for this booking.">${ic('msg',16)} Message</button>
+        <button class="btn ghost sm grow" data-act="toast" data-v="Pickup directions appear here after booking.">${ic('nav',16)} Directions</button></div>
       <button class="btn dark" data-act="go" data-v="ret" style="flex:none">Start return</button>
     </div>${tabbar('booked')}`;
 };
@@ -858,11 +881,11 @@ V.earnings = () => {
     <div class="body">
       <div class="stack" style="gap:4px"><p class="eyebrow">Your stuff earned</p><div class="big">$${total}</div><p class="small muted">in the last 4 weeks · paid out every Friday</p></div>
       ${S.request ? '' : `<button class="req" data-act="go" data-v="request"><span class="av" style="background:#D9E7C9">AL</span>
-        <span class="grow"><b>Ava L. wants your projector</b><span class="small d">Fri, Oct 23 · movie night for 5</span></span><span class="btn dark sm">Review</span></button>`}
+        <span class="grow"><b>Ava L. wants your projector</b><span class="small d">Sun, Oct 25 · movie night for 5</span></span><span class="btn dark sm">Review</span></button>`}
       <section class="stack"><h2 class="lbl">By week</h2>${chart()}</section>
       <section class="stack" style="gap:0"><h2 class="lbl" style="margin-bottom:2px">Your items</h2>${mine}${newRow}</section>
       ${S.request === 'accepted' ? `<section class="stack"><h2 class="lbl">Coming up</h2><div class="card row"><span class="thumb sm">${ART.projector}</span>
-        <div class="grow"><b>Projector · Ava L.</b><p class="small muted">Pickup Fri, Oct 23 at 6 PM in your lobby</p></div><b>$8.50</b></div></section>` : ''}
+        <div class="grow"><b>Projector · Ava L.</b><p class="small muted">Pickup Sun, Oct 25 at 6 PM in your lobby</p></div><b>$8.50</b></div></section>` : ''}
       <button class="btn ghost" data-act="go" data-v="list" style="flex:none">${ic('plus',18)} List another item</button>
     </div>${tabbar('earnings')}`;
 };
@@ -878,7 +901,7 @@ V.request = () => {
         <div class="row"><span class="thumb sm">${ART.projector}</span><div class="grow"><b>Projector + screen</b><p class="small muted">$10 / day</p></div></div>
         <div class="divider"></div>
         <div class="prices">
-          <div class="pr"><span class="muted">When</span><span>Fri 6 PM → Sat 10 AM</span></div>
+          <div class="pr"><span class="muted">When</span><span>Sun 6 PM → Mon 10 AM</span></div>
           <div class="pr"><span class="muted">Handoff</span><span>Your lobby</span></div>
           <div class="pr"><span class="muted">Price</span><span>$10.00</span></div>
           <div class="pr"><span class="muted">Borrowly fee (15%)</span><span>−$1.50</span></div>
@@ -894,7 +917,7 @@ V.request = () => {
 
 V.list = () => `${topbar('List an item')}
     <div class="body">
-      <div class="hero-img">${ART.chairs}<button class="chg" data-act="toast" data-v="In the real app this opens your camera.">${ic('camera',15)} Change photo</button></div>
+      <div class="hero-img">${ART.chairs}<button class="chg" data-act="toast" data-v="Choose a photo for your listing.">${ic('camera',15)} Change photo</button></div>
       <div class="field"><label for="lname">What are you lending?</label><input id="lname" value="${esc(S.lname)}" autocomplete="off"></div>
       <section class="stack"><h2 class="lbl">Category</h2>
         <div class="chips">${['TVs','Tables','Chairs','Speakers','Other'].map(c => `<button class="chip pick ${S.lcat===c?'on':''}" data-act="lcat" data-v="${c}" aria-pressed="${S.lcat===c}">${c}</button>`).join('')}</div></section>
@@ -1018,7 +1041,7 @@ const A = {
   photo: v => { S.ret[v] = true; rerender(); },
   rate: v => { const [l, n] = v.split(':'); S.rate[l] = Number(n); rerender(); },
   finish: () => { S.booked = null; S.ret = {}; S.rate = {}; stack = ['home']; show('home', 'fade'); toast('Returned. Your $100 hold is released.'); },
-  accept: () => { S.request = 'accepted'; stack = ['earnings']; show('earnings', 'back'); toast('Accepted. Ava picks up Friday at 6 PM.'); },
+  accept: () => { S.request = 'accepted'; stack = ['earnings']; show('earnings', 'back'); toast('Accepted. Ava picks up Sunday at 6 PM.'); },
   decline: () => { S.request = 'declined'; stack = ['earnings']; show('earnings', 'back'); toast('Declined. We’ll suggest other lenders to Ava.', 'info'); },
   lcat: v => { S.lcat = v; rerender(); },
   lprice: v => { S.lprice = Math.min(30, Math.max(2, S.lprice + Number(v))); rerender(); },
@@ -1047,33 +1070,17 @@ document.addEventListener('input',e=>{
 });
 document.addEventListener('gesturestart', e => e.preventDefault());
 
-/* ---------- side panel ---------- */
-const flowList = (items, start) => items.map(([k, l], i) => `<li><button data-act="jump" data-v="${k}" data-k="${k}"><span class="n">${start + i}</span>${l}</button></li>`).join('');
-document.getElementById('flowB').innerHTML = flowList(FLOW_B, 1);
-document.getElementById('flowL').innerHTML = flowList(FLOW_L, FLOW_B.length + 1);
-function syncPanel(){
-  const n = cur && cur.dataset.screen;
-  document.querySelectorAll('.flow button').forEach(b => b.classList.toggle('on', b.dataset.k === n));
-}
+/* App navigation replaces presentation controls. */
+function syncPanel(){}
 
 /* ---------- layout mode ---------- */
 const root = document.documentElement, body = document.body;
 const isShot = /(^|[?&])shot\b/.test(location.search);
 if (isShot) { root.classList.add('shot'); body.classList.add('shot'); }
 function fit(){
-  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
-  // A phone gets the bare app at any orientation: narrow screens, touch devices with a phone-sized screen, or launched from the Home Screen.
-  const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) <= 500;
-  const full = !isShot && (innerWidth <= 520 || phone || standalone || /(^|[?&])app\b/.test(location.search));
+  const full = innerWidth <= 520 || navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
   body.classList.toggle('full', full);
-  let s = 1;
-  if (!full && !isShot) {
-    const wide = innerWidth >= 900;
-    const availW = wide ? innerWidth - 370 - 64 - 60 : innerWidth - 40;
-    s = Math.min(1, (innerHeight - 48) / 868, availW / 414);
-    s = Math.max(.5, s);
-  }
-  root.style.setProperty('--s', s.toFixed(3));
+  root.style.setProperty('--s', '1');
 }
 addEventListener('resize', fit);
 fit();
