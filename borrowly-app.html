@@ -1,0 +1,1133 @@
+<!doctype html>
+<html lang="en" class="site">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-title" content="Borrowly">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="theme-color" content="#ffffff">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<link rel="icon" type="image/svg+xml" href="borrowly-icon.svg">
+<link rel="manifest" href="manifest.webmanifest">
+<title>Borrowly | Rent what you need, from people nearby</title>
+</head>
+<body>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,700;12..96,800&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap">
+<style>
+/* Layout: the deck's yellow slide as a desk, notes on the left, a life-size phone on the right.
+   On a real phone (or from the Home Screen) the app fills the whole screen instead.
+   Single light theme on purpose: it has to match the team's slides. */
+:root{
+  --yellow:#F2EE5C; --yellow-soft:#FBF8C8; --red:#E5401D; --red-press:#C7330F;
+  --ink:#151513; --ink-2:#56554E; --ink-3:#8E8D84; --line:#E7E6DF; --fill:#F4F3EE;
+  --white:#FFFFFF; --green:#1E8A4C;
+  --display:"Bricolage Grotesque","Plus Jakarta Sans",system-ui,sans-serif;
+  --ui:"Plus Jakarta Sans",system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;
+  color-scheme:light;
+}
+*{box-sizing:border-box}
+html,body{height:100%}
+body{margin:0;background:var(--yellow);color:var(--ink);font-family:var(--ui);font-size:15px;-webkit-font-smoothing:antialiased;-webkit-tap-highlight-color:transparent;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer}
+button:focus-visible,input:focus-visible,[role=button]:focus-visible{outline:2px solid var(--red);outline-offset:2px}
+svg{display:block}
+p{margin:0;line-height:1.45}
+
+/* ---------- desk + notes panel ---------- */
+.stage{min-height:100%;display:grid;grid-template-columns:minmax(0,370px) auto;justify-content:center;align-items:center;gap:64px;padding-block:24px;padding-left:max(36px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+.stage::before{content:"";position:fixed;left:0;top:0;bottom:0;width:14px;background:var(--red)}
+.panel{display:flex;flex-direction:column;gap:22px;min-width:0}
+.wordmark{font-family:var(--display);font-weight:800;font-size:48px;letter-spacing:-.035em;line-height:1;display:flex;align-items:center;gap:10px}
+.wordmark .brand-mark{width:54px;height:54px;object-fit:contain;flex:none;border-radius:12px}
+.lede{font-size:17px;line-height:1.45;max-width:32ch}
+.meta{font-size:13px;color:var(--ink-2);line-height:1.5}
+.panel h2{font-size:11px;letter-spacing:.11em;text-transform:uppercase;margin:0 0 6px;color:var(--ink-2);font-weight:700}
+.flows{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.flow ol{list-style:none;margin:0;padding:0;display:grid;gap:1px}
+.flow button{width:100%;display:flex;gap:8px;align-items:center;background:none;border:0;padding:6px 8px;border-radius:9px;text-align:left;font-size:13.5px;font-weight:600}
+.flow .n{font-variant-numeric:tabular-nums;width:21px;height:21px;border-radius:50%;border:1.5px solid currentColor;display:grid;place-items:center;font-size:10.5px;font-weight:700;flex:none}
+.flow button:hover{background:rgba(21,21,19,.07)}
+.flow button.on{background:var(--ink);color:var(--yellow)}
+.tests{display:grid;gap:6px}
+.test{display:block;width:100%;text-align:left;background:rgba(255,255,255,.55);border:0;border-radius:12px;padding:9px 12px;font-size:13px;line-height:1.4;color:var(--ink-2)}
+.test:hover{background:rgba(255,255,255,.85)}
+.test b{color:var(--ink);font-size:13.5px}
+.reset{align-self:flex-start;background:none;border:1.5px solid var(--ink);border-radius:999px;padding:7px 14px;font-weight:700;font-size:13px}
+.reset:hover{background:var(--ink);color:var(--yellow)}
+@media (max-width:899px){
+  .stage{grid-template-columns:minmax(0,1fr);justify-items:center;gap:32px}
+  .panel{order:2;max-width:440px;width:100%}
+}
+
+/* ---------- phone frame ---------- */
+.holder{width:calc(414px * var(--s,1));height:calc(868px * var(--s,1));flex:none}
+.phone{width:414px;height:868px;transform:scale(var(--s,1));transform-origin:0 0;background:#111;border-radius:66px;padding:12px;box-shadow:inset 0 0 0 2px #333,0 34px 60px -24px rgba(80,60,0,.5),0 10px 24px rgba(80,60,0,.18)}
+.screen{position:relative;width:390px;height:844px;border-radius:54px;overflow:hidden;background:var(--white);isolation:isolate;--top:50px;--bottom:22px}
+.island{position:absolute;top:11px;left:50%;transform:translateX(-50%);width:122px;height:35px;border-radius:20px;background:#000;z-index:30}
+.sbar{position:absolute;top:0;left:0;right:0;height:50px;display:flex;justify-content:space-between;align-items:center;padding:6px 32px 0 50px;font-weight:700;font-size:16px;z-index:20}
+.sbar .icons{display:flex;gap:6px;align-items:center}
+.homebar{position:absolute;bottom:8px;left:50%;transform:translateX(-50%);width:136px;height:5px;border-radius:3px;background:var(--ink);z-index:30;pointer-events:none}
+.views{position:absolute;top:var(--top);left:0;right:0;bottom:0;overflow:hidden}
+
+/* full-screen on a phone */
+body.full{background:var(--white)}
+body.full .stage{display:block;padding:0;min-height:0;height:100%}
+body.full .stage::before,body.full .panel,body.full .island,body.full .sbar,body.full .homebar{display:none}
+body.full .holder,body.full .phone,body.full .screen{width:100%;height:100%}
+body.full .phone{transform:none;padding:0;border-radius:0;box-shadow:none;background:var(--white)}
+body.full .screen{border-radius:0;--top:0px;--bottom:6px}
+html.site body.full .screen{--top:env(safe-area-inset-top,0px);--bottom:max(6px,env(safe-area-inset-bottom,0px))}
+
+/* screenshot mode (?shot) */
+html.shot,html.shot body{background:transparent}
+body.shot .stage{display:block;padding:0;min-height:0}
+body.shot .stage::before,body.shot .panel,body.shot .toast{display:none}
+body.shot .phone{box-shadow:inset 0 0 0 2px #333}
+
+/* ---------- app views ---------- */
+.view{position:absolute;inset:0;display:flex;flex-direction:column;background:var(--white)}
+.top{display:flex;align-items:center;gap:4px;padding:4px 10px;min-height:52px;flex:none}
+.top .ttl{flex:1;text-align:center;font-weight:700;font-size:16px}
+.spacer{width:40px;flex:none}
+.ib{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:none;border:0;position:relative;flex:none}
+.ib:active{background:var(--fill)}
+.ib .dot{position:absolute;top:9px;right:10px;width:9px;height:9px;border-radius:50%;background:var(--red);box-shadow:0 0 0 2px var(--white)}
+.ib.fav-on{color:var(--red)} .ib.fav-on svg{fill:currentColor}
+.logo{background:none;border:0;display:flex;align-items:center;gap:6px;font-family:var(--display);font-weight:800;font-size:22px;letter-spacing:-.035em;padding:0 10px}
+.logo .brand-mark{width:28px;height:28px;object-fit:contain;flex:none;border-radius:7px}
+.body{flex:1;overflow-y:auto;overflow-x:hidden;padding:4px 20px 28px;display:flex;flex-direction:column;gap:22px;scrollbar-width:none;overscroll-behavior:contain;-webkit-overflow-scrolling:touch}
+.body::-webkit-scrollbar{display:none}
+.body > *{flex-shrink:0}
+.foot{flex:none;padding:12px 20px calc(10px + var(--bottom));border-top:1px solid var(--line);background:var(--white);display:flex;gap:10px}
+.tabbar{flex:none;display:flex;justify-content:space-around;padding:6px 12px var(--bottom);border-top:1px solid var(--line);background:var(--white)}
+.tab{background:none;border:0;display:flex;flex-direction:column;align-items:center;gap:3px;font-size:11px;font-weight:600;color:var(--ink-3);padding:4px 18px 2px}
+.tab.on{color:var(--red)}
+
+.eyebrow{font-size:14px;color:var(--ink-2);font-weight:500}
+h1{font-size:28px;line-height:1.12;letter-spacing:-.03em;font-weight:800;margin:0;text-wrap:balance}
+h3{margin:0;font-size:20px;line-height:1.15;letter-spacing:-.02em;font-weight:800}
+.lbl{font-size:11px;font-weight:700;letter-spacing:.09em;text-transform:uppercase;color:var(--ink-3);margin:0;display:flex;justify-content:space-between;align-items:baseline}
+.link{color:var(--red);font-weight:700;letter-spacing:0;text-transform:none;font-size:13px;background:none;border:0;padding:0}
+.muted{color:var(--ink-2)} .small{font-size:12.5px} .d{display:block;margin-top:2px}
+.stack{display:flex;flex-direction:column;gap:10px}
+.row{display:flex;align-items:center;gap:12px}
+.grow{flex:1;min-width:0}
+b{font-weight:700}
+
+.btn{flex:1;height:54px;border-radius:15px;border:0;font-weight:700;font-size:16px;display:flex;align-items:center;justify-content:center;gap:8px;padding:0 20px;transition:transform .1s,background .15s;white-space:nowrap}
+.btn:active{transform:scale(.98)}
+.btn.red{background:var(--red);color:#fff} .btn.red:active{background:var(--red-press)}
+.btn.split{justify-content:space-between}
+.btn.dark{background:var(--ink);color:#fff}
+.btn.ghost{background:var(--white);border:1.5px solid var(--line);color:var(--ink)}
+.btn[disabled]{background:#ECEBE5;color:var(--ink-3);cursor:not-allowed;transform:none}
+.btn.sm{height:40px;font-size:14px;border-radius:12px;flex:none;padding:0 16px}
+.btn.sm.grow{flex:1}
+
+.card{border:1px solid var(--line);border-radius:18px;padding:14px;background:var(--white)}
+.soft{background:var(--yellow-soft);border-radius:16px;padding:14px}
+.soft .i,.strip .i,.chip .i{color:var(--red)}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:5px;padding:6px 11px;border-radius:999px;background:var(--fill);font-size:12.5px;font-weight:600;white-space:nowrap;border:0}
+.chip.pick{border:1.5px solid var(--line);background:var(--white);padding:7px 13px}
+.chip.pick.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.pricetag{background:var(--yellow);font-weight:800;font-size:14px;padding:5px 10px;border-radius:9px;white-space:nowrap;flex:none}
+.av{width:42px;height:42px;border-radius:50%;display:grid;place-items:center;font-weight:800;font-size:14px;flex:none;color:var(--ink)}
+.av.sm{width:32px;height:32px;font-size:11px}
+.av.lg{width:64px;height:64px;font-size:20px}
+.thumb{width:62px;height:62px;border-radius:14px;overflow:hidden;flex:none;display:block}
+.thumb.sm{width:44px;height:44px;border-radius:11px}
+.thumb > svg,.hero-art > svg,.nart > svg,.hero-img > svg,.slot > svg:not(.i){width:100%;height:100%}
+.ic-badge{width:40px;height:40px;border-radius:12px;background:var(--fill);display:grid;place-items:center;flex:none}
+.divider{height:1px;background:var(--line)}
+
+/* home */
+.loc{display:flex;align-items:center;gap:4px;background:none;border:0;padding:0;font-size:14px;font-weight:600;color:var(--ink-2)}
+.loc .i:first-child{color:var(--red)}
+.search{display:flex;align-items:center;gap:10px;height:48px;border-radius:14px;background:var(--fill);padding:0 14px;color:var(--ink-3);font-size:14px;border:0;width:100%;text-align:left}
+.hero{background:var(--yellow);border-radius:22px;padding:18px 0 18px 18px;display:grid;grid-template-columns:1fr 128px;gap:6px;align-items:end;overflow:hidden}
+.hero-art{height:118px;border-radius:14px 0 0 14px;overflow:hidden}
+.cats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.cat{background:var(--fill);border:0;border-radius:16px;padding:14px 4px 10px;display:flex;flex-direction:column;align-items:center;gap:7px;font-size:12px;font-weight:600}
+.near{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ncard{background:none;border:0;padding:0;text-align:left;display:flex;flex-direction:column;gap:4px;font-size:13px;min-width:0}
+.nart{position:relative;aspect-ratio:4/3;border-radius:14px;overflow:hidden;margin-bottom:4px;max-width:100%}
+.fav{position:absolute;top:8px;right:8px;width:30px;height:30px;border-radius:50%;background:var(--white);display:grid;place-items:center}
+.fav.on{color:var(--red)} .fav.on svg{fill:currentColor}
+.strip{display:flex;gap:10px;align-items:center;background:var(--yellow-soft);border-radius:14px;padding:12px 14px;font-size:13px;border:0;text-align:left;width:100%;line-height:1.4}
+
+/* plan */
+.dates{display:flex;gap:8px;overflow-x:auto;margin:0 -20px;padding:2px 20px;scrollbar-width:none}
+.dates::-webkit-scrollbar{display:none}
+.date{flex:none;width:62px;padding:10px 0;border-radius:16px;border:1.5px solid var(--line);background:var(--white);display:flex;flex-direction:column;align-items:center;gap:1px}
+.date b{font-size:21px;font-variant-numeric:tabular-nums}
+.date.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.stepper{display:flex;align-items:center;justify-content:space-between;border:1.5px solid var(--line);border-radius:18px;padding:10px}
+.stp{width:48px;height:48px;border-radius:50%;border:0;background:var(--fill);display:grid;place-items:center}
+.stp[disabled]{opacity:.35;cursor:not-allowed}
+.stp-n{display:flex;flex-direction:column;align-items:center}
+.stp-n b{font-size:34px;line-height:1.05;font-weight:800;font-variant-numeric:tabular-nums}
+.opt{display:flex;align-items:center;gap:12px;width:100%;background:var(--white);border:1.5px solid var(--line);border-radius:16px;padding:12px 14px;text-align:left}
+.opt.on{border-color:var(--ink)}
+.box{width:24px;height:24px;border-radius:7px;border:1.5px solid var(--ink-3);display:grid;place-items:center;flex:none}
+.opt.on .box{background:var(--ink);border-color:var(--ink);color:#fff}
+
+/* bundle */
+.mapbox{border-radius:18px;overflow:hidden;border:1px solid var(--line)}
+.mapbox svg{width:100%;height:auto}
+.irow{display:flex;gap:12px;align-items:center;width:100%;background:none;border:0;border-bottom:1px solid var(--line);padding:12px 0;text-align:left}
+.irow:last-child{border-bottom:0}
+
+
+/* Occasion-based planner and configurable bundle */
+.occasion-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}
+.occasion{display:flex;flex-direction:column;gap:5px;align-items:flex-start;text-align:left;background:var(--fill);border:1.5px solid var(--line);border-radius:16px;padding:12px;min-height:74px}
+.occasion b{font-size:13px}.occasion .small{font-size:11px}
+.occasion.on{background:var(--yellow-soft);border-color:var(--red)}
+.hint{font-size:12px;line-height:1.4;color:var(--ink-2)}
+.bundle-intro{background:var(--yellow-soft);border-radius:16px;padding:14px}
+.bundle-intro h3{font-size:19px;margin:4px 0}
+.filter-box{border:1px solid var(--line);border-radius:16px;padding:13px;display:flex;flex-direction:column;gap:9px}
+.filter-box .chips{gap:5px}.filter-box .chip.pick{font-size:11px;padding:6px 9px}
+.bundle-line{display:flex;gap:9px;align-items:center;border-bottom:1px solid var(--line);padding:12px 0}
+.bundle-line:last-child{border:0}.bundle-line .thumb{width:52px;height:52px}
+.micro{border:1px solid var(--line);border-radius:9px;background:var(--white);font-size:12px;font-weight:700;padding:7px 10px}
+.micro.accent{color:var(--red);border-color:var(--red)}
+.bundle-total{display:flex;align-items:center;justify-content:space-between;font-size:14px;font-weight:700}
+.bundle-total strong{font-size:23px}
+.swap-card{border:1.5px solid var(--line);border-radius:16px;padding:12px;display:flex;gap:10px}
+.swap-card.on{border-color:var(--red);background:var(--yellow-soft)}
+.swap-card .thumb{width:72px;height:72px}
+.swap-card .btn{height:34px;font-size:12px;padding:0 12px;border-radius:10px}
+.note{font-size:11px;color:var(--ink-3);line-height:1.4}
+/* Marketplace */
+.top-market{display:inline-flex;align-items:center;gap:5px;background:var(--fill);border:0;border-radius:12px;padding:9px 10px;font-size:12px;font-weight:700}
+.market-search{display:flex;align-items:center;gap:9px;background:var(--fill);border-radius:14px;padding:10px 12px}
+.market-search input{min-width:0;width:100%;border:0;outline:0;background:transparent;font:inherit;font-size:14px;color:var(--ink)}
+.market-cats{display:flex;flex-wrap:wrap;gap:7px}
+.market-results{display:flex;flex-direction:column;gap:10px}
+.market-card{display:flex;align-items:flex-start;gap:12px;border:1.5px solid var(--line);border-radius:16px;padding:11px}
+.market-card .thumb{width:72px;height:78px;border-radius:12px}
+.market-actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
+.market-banner{display:flex;align-items:center;gap:10px;background:var(--yellow-soft);border-radius:16px;padding:13px}
+.market-empty{background:var(--fill);border-radius:16px;text-align:center;padding:24px 12px}
+.custom-field{width:100%;height:45px;border:1.5px solid var(--line);border-radius:13px;font:inherit;font-size:14px;padding:0 12px}
+.planner-helper{background:var(--yellow-soft);border:1px dashed var(--red);border-radius:13px;padding:13px;display:flex;gap:10px;align-items:center;text-align:left;font-weight:700}
+/* item */
+.hero-img{position:relative;aspect-ratio:16/10;border-radius:20px;overflow:hidden;max-width:100%;flex:none}
+.badge-ins{position:absolute;top:12px;left:12px;background:var(--yellow);border-radius:8px;padding:4px 8px;font-size:12px;font-weight:700;display:flex;gap:4px;align-items:center}
+.count{position:absolute;bottom:10px;right:10px;background:rgba(21,21,19,.6);color:#fff;border-radius:8px;padding:3px 8px;font-size:11px;font-weight:700}
+.chg{position:absolute;bottom:10px;right:10px;background:var(--white);border:0;border-radius:10px;padding:7px 10px;font-size:12.5px;font-weight:700;display:flex;gap:6px;align-items:center}
+.review{margin:0;background:var(--fill);border-radius:14px;padding:12px 14px;font-size:14px;line-height:1.45}
+.review cite{display:block;font-style:normal;font-size:12px;color:var(--ink-2);margin-top:6px}
+
+/* coverage */
+.cov-hero{display:flex;flex-direction:column;gap:10px;align-items:flex-start}
+.cov-ic{width:64px;height:64px;border-radius:20px;background:var(--yellow);display:grid;place-items:center;color:var(--red)}
+.fact{display:grid;grid-template-columns:40px 1fr;gap:12px;align-items:start}
+.fact .ic-badge{background:var(--yellow-soft);color:var(--red)}
+.steps{list-style:none;margin:0;padding:0;display:grid;gap:10px;counter-reset:s}
+.steps li{display:grid;grid-template-columns:26px 1fr;gap:10px;font-size:14px;line-height:1.4;counter-increment:s}
+.steps li::before{content:counter(s);width:26px;height:26px;border-radius:50%;background:var(--ink);color:#fff;display:grid;place-items:center;font-size:12px;font-weight:700}
+
+/* checkout */
+.choice{display:flex;gap:12px;align-items:flex-start;width:100%;text-align:left;border:1.5px solid var(--line);border-radius:16px;padding:14px;background:var(--white)}
+.choice.on{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink)}
+.radio{width:22px;height:22px;border-radius:50%;border:1.5px solid var(--ink-3);flex:none;margin-top:1px;display:grid;place-items:center}
+.choice.on .radio{border:7px solid var(--ink)}
+.prices{display:flex;flex-direction:column;gap:9px;font-size:14px}
+.prices .pr{display:flex;justify-content:space-between;gap:12px;font-variant-numeric:tabular-nums}
+.prices .total{border-top:1px solid var(--line);padding-top:10px;font-weight:800;font-size:17px}
+.ok-t{color:var(--green);font-weight:700}
+
+/* booked */
+.bk-card{background:var(--ink);color:#fff;border-radius:16px;padding:12px;display:flex;gap:12px;align-items:center}
+.thumbs{display:flex}
+.thumbs .thumb{border:2px solid var(--ink)}
+.thumbs .thumb + .thumb{margin-left:-14px}
+.tl{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.tl li{display:grid;grid-template-columns:22px 1fr auto;gap:12px;position:relative;padding-bottom:16px}
+.tl li::before{content:"";position:absolute;left:10px;top:22px;bottom:0;width:2px;background:var(--line)}
+.tl li:last-child{padding-bottom:0}
+.tl li:last-child::before{display:none}
+.dotx{width:22px;height:22px;border-radius:50%;border:2px solid var(--line);background:var(--white);display:grid;place-items:center}
+.tl li.done .dotx{background:var(--red);border-color:var(--red);color:#fff}
+.tl li.next .dotx{border:3px solid var(--red)}
+.tl b{display:block;font-size:14px}
+.tl span.s{font-size:12px;color:var(--ink-2)}
+.tl time{font-size:12px;color:var(--ink-2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.code{font-size:20px;letter-spacing:.12em;font-variant-numeric:tabular-nums}
+.bubble{background:var(--fill);border-radius:4px 16px 16px 16px;padding:10px 12px;font-size:13.5px;line-height:1.4}
+.empty{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;gap:12px;padding:40px 10px}
+
+/* return */
+.slot-w{display:flex;flex-direction:column;align-items:center;gap:4px}
+.slot{width:64px;height:64px;border-radius:12px;border:1.5px dashed var(--ink-3);display:grid;place-items:center;background:var(--fill);position:relative;overflow:hidden;flex:none;padding:0;color:var(--ink-2)}
+.slot.filled{border:0}
+.ok{position:absolute;right:4px;bottom:4px;width:19px;height:19px;border-radius:50%;background:var(--green);color:#fff;display:grid;place-items:center}
+.stars{display:flex}
+.star{background:none;border:0;padding:3px;color:#D5D3CA}
+.star.on{color:#E8A400} .star.on svg{fill:currentColor}
+
+/* lender */
+.mode{background:var(--fill);border-radius:999px;padding:6px 12px;font-size:12px;font-weight:700;margin-right:6px}
+.big{font-family:var(--display);font-size:56px;font-weight:800;letter-spacing:-.04em;line-height:1;font-variant-numeric:tabular-nums}
+.req{display:flex;gap:12px;align-items:center;width:100%;text-align:left;background:var(--yellow);border:0;border-radius:18px;padding:14px;font-size:14px}
+.chart text{font-family:var(--ui);font-size:10.5px;fill:var(--ink-3);font-weight:600}
+.chart .v{fill:var(--ink);font-weight:800;font-size:11.5px}
+.days{display:grid;grid-template-columns:repeat(7,1fr);gap:6px}
+.day{height:40px;border-radius:12px;border:1.5px solid var(--line);background:var(--white);font-size:12.5px;font-weight:700;padding:0}
+.day.on{background:var(--ink);color:#fff;border-color:var(--ink)}
+.field{display:flex;flex-direction:column;gap:6px}
+.field label{font-size:13px;font-weight:700}
+.field input{height:50px;border:1.5px solid var(--line);border-radius:14px;padding:0 14px;font:inherit;font-size:16px;color:var(--ink);background:var(--white)}
+.field input:focus{border-color:var(--ink);outline:none}
+.sw{width:50px;height:30px;border-radius:999px;background:#D9D8D1;border:0;position:relative;flex:none;transition:background .2s;padding:0}
+.sw::after{content:"";position:absolute;top:3px;left:3px;width:24px;height:24px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.25);transition:transform .2s}
+.sw.on{background:var(--green)} .sw.on::after{transform:translateX(20px)}
+.ava-head{display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+
+/* toast */
+.toast{position:absolute;left:16px;right:16px;bottom:calc(92px + var(--bottom));background:var(--ink);color:#fff;border-radius:14px;padding:13px 14px;font-size:14px;font-weight:600;display:flex;gap:10px;align-items:center;z-index:40;transform:translateY(16px);opacity:0;pointer-events:none;transition:opacity .25s,transform .25s;line-height:1.35}
+.toast .i{color:var(--yellow);flex:none}
+.toast.show{opacity:1;transform:none}
+
+/* transitions */
+.in-r{animation:inR .34s cubic-bezier(.2,.8,.2,1) both;box-shadow:-10px 0 30px rgba(0,0,0,.08)}
+.out-l{animation:outL .34s cubic-bezier(.2,.8,.2,1) both}
+.in-l{animation:inL .34s cubic-bezier(.2,.8,.2,1) both}
+.out-r{animation:outR .34s cubic-bezier(.2,.8,.2,1) both;box-shadow:-10px 0 30px rgba(0,0,0,.08)}
+.in-f{animation:fadeIn .22s ease both}
+.out-f{animation:fadeOut .22s ease both}
+@keyframes inR{from{transform:translateX(100%)}to{transform:none}}
+@keyframes outL{to{transform:translateX(-28%)}}
+@keyframes inL{from{transform:translateX(-28%)}to{transform:none}}
+@keyframes outR{to{transform:translateX(100%)}}
+@keyframes fadeIn{from{opacity:0}}
+@keyframes fadeOut{to{opacity:0}}
+@media (prefers-reduced-motion:reduce){.in-r,.out-l,.in-l,.out-r,.in-f,.out-f{animation-duration:1ms}.toast{transition:none}}
+
+/* Real listing photography, shown in both marketplace and item details. */
+.listing-photo{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  object-position:center;
+  background:#efeee9;
+}
+
+/* Standalone clickable app demo: centered phone on Borrowly yellow. */
+body { background: #F2EE5C !important; }
+.stage { display:flex !important; min-height:100dvh; align-items:center; justify-content:center; gap:0; padding:24px !important; }
+.stage::before, .panel { display:none !important; }
+.holder { margin:0 auto; }
+@media (max-width:899px) {
+  .stage { display:flex !important; flex-direction:row; align-items:center; justify-content:center; }
+}
+
+</style>
+
+<main class="stage">
+  <aside class="panel" aria-label="About Borrowly">
+    <div class="stack" style="gap:12px">
+      <div class="wordmark"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</div>
+      <p class="lede">Host more in a small space. Choose your occasion, set a budget, and Borrowly puts together a customizable bundle of nearby essentials.</p>
+      <p class="meta">HCDIx Team 4 · Crowded City<br>Daniel Engel, Mira Hout, Hunter Sigmund, Shivi Tiwari</p>
+    </div>
+    <div class="flows">
+      <div class="flow"><h2>Borrower</h2><ol id="flowB"></ol></div>
+      <div class="flow"><h2>Lender</h2><ol id="flowL"></ol></div>
+    </div>
+    <div class="tests">
+      <h2>Why Borrowly works</h2>
+      <button class="test" data-act="jump" data-v="plan"><b>Start with your occasion.</b> Plan a dinner, movie night, or game night rather than searching item by item.</button>
+      <button class="test" data-act="jump" data-v="bundle"><b>Get a smart bundle.</b> Find nearby essentials based on your guest count, budget, ratings, and availability.</button>
+      <button class="test" data-act="browse" data-v="all"><b>Make it yours.</b> Explore every item, swap lenders, and add or remove items as your plans change.</button>
+    </div>
+    <button class="reset" data-act="reset">Start over</button>
+  </aside>
+
+<div class="holder" id="holder">
+    <div class="phone">
+      <div class="screen" id="screen">
+        <div class="sbar" aria-hidden="true"><span>9:41</span>
+          <span class="icons">
+            <svg width="18" height="12" viewBox="0 0 18 12"><rect x="0" y="8" width="3" height="4" rx="1" fill="#151513"/><rect x="5" y="5.5" width="3" height="6.5" rx="1" fill="#151513"/><rect x="10" y="3" width="3" height="9" rx="1" fill="#151513"/><rect x="15" y="0" width="3" height="12" rx="1" fill="#151513"/></svg>
+            <svg width="16" height="12" viewBox="0 0 16 12"><path d="M8 11.5 5.6 9a3.4 3.4 0 0 1 4.8 0Z" fill="#151513"/><path d="M3.4 6.8a6.5 6.5 0 0 1 9.2 0l-1.3 1.3a4.6 4.6 0 0 0-6.6 0Z" fill="#151513"/><path d="M1.2 4.6a9.6 9.6 0 0 1 13.6 0L13.5 5.9a7.8 7.8 0 0 0-11 0Z" fill="#151513"/></svg>
+            <svg width="27" height="13" viewBox="0 0 27 13"><rect x=".5" y=".5" width="23" height="12" rx="3.5" fill="none" stroke="#151513" opacity=".4"/><rect x="2" y="2" width="20" height="9" rx="2" fill="#151513"/><path d="M25 4.5v4a2 2 0 0 0 0-4Z" fill="#151513" opacity=".45"/></svg>
+          </span>
+        </div>
+        <div class="island" aria-hidden="true"></div>
+        <div class="views" id="views"></div>
+        <div class="toast" id="toast" role="status" aria-live="polite"></div>
+        <div class="homebar" aria-hidden="true"></div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<script>
+(() => {
+/* ---------- icons (Lucide-style strokes) ---------- */
+const P = {
+  home:'<path d="M3 10.5 12 3l9 7.5"/><path d="M5 9.5V20a1 1 0 0 0 1 1h4v-6h4v6h4a1 1 0 0 0 1-1V9.5"/>',
+  calendar:'<rect x="3" y="4.5" width="18" height="16.5" rx="2.5"/><path d="M16 2.5v4M8 2.5v4M3 10h18"/>',
+  search:'<circle cx="11" cy="11" r="7"/><path d="m20.5 20.5-4.5-4.5"/>',
+  sliders:'<path d="M4 7h10M18 7h2M4 17h4M12 17h8"/><circle cx="16" cy="7" r="2"/><circle cx="10" cy="17" r="2"/>',
+  bell:'<path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/><path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/>',
+  pin:'<path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/>',
+  back:'<path d="M19 12H5M12 19l-7-7 7-7"/>',
+  chev:'<path d="m9 18 6-6-6-6"/>',
+  chevd:'<path d="m6 9 6 6 6-6"/>',
+  heart:'<path d="M19 14c1.5-1.5 3-3.2 3-5.5A5.5 5.5 0 0 0 16.5 3c-1.8 0-3 .5-4.5 2-1.5-1.5-2.7-2-4.5-2A5.5 5.5 0 0 0 2 8.5c0 2.3 1.5 4 3 5.5l7 7Z"/>',
+  share:'<path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><path d="m16 6-4-4-4 4M12 2v13"/>',
+  shield:'<path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10Z"/><path d="m9 12 2 2 4-4"/>',
+  check:'<path d="M20 6 9 17l-5-5"/>',
+  star:'<path d="m12 2 3.1 6.3 6.9 1-5 4.9 1.2 6.8L12 17.8 5.8 21l1.2-6.8-5-4.9 6.9-1Z"/>',
+  truck:'<path d="M14 18V6a2 2 0 0 0-2-2H4a2 2 0 0 0-2 2v11a1 1 0 0 0 1 1h2"/><path d="M15 18H9"/><path d="M19 18h2a1 1 0 0 0 1-1v-3.65a1 1 0 0 0-.22-.62l-3.48-4.35A1 1 0 0 0 17.52 8H14"/><circle cx="17" cy="18" r="2"/><circle cx="7" cy="18" r="2"/>',
+  walk:'<circle cx="13" cy="4" r="2"/><path d="m7 21 3-6 3 2v5"/><path d="m10 15 1-6 4 3 3 1"/><path d="M11 9 8 10l-2 4"/>',
+  msg:'<path d="M21 12a8.5 8.5 0 0 1-12.6 7.4L3 21l1.6-5.4A8.5 8.5 0 1 1 21 12Z"/>',
+  key:'<circle cx="7.5" cy="15.5" r="4.5"/><path d="m10.7 12.3 9.8-9.8M17 6l3 3M14.5 8.5l2 2"/>',
+  camera:'<path d="M14.5 4h-5L7.5 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3.5Z"/><circle cx="12" cy="13" r="3.5"/>',
+  plus:'<path d="M12 5v14M5 12h14"/>',
+  minus:'<path d="M5 12h14"/>',
+  clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',
+  nav:'<path d="m3 11 19-9-9 19-2-8Z"/>',
+  tag:'<path d="M12.6 2.6A2 2 0 0 0 11.2 2H4a2 2 0 0 0-2 2v7.2a2 2 0 0 0 .6 1.4l8.7 8.7a2.4 2.4 0 0 0 3.4 0l6.6-6.6a2.4 2.4 0 0 0 0-3.4Z"/><circle cx="7.5" cy="7.5" r="1.5"/>',
+  id:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="8" cy="12" r="2.5"/><path d="M14 10h4M14 14h4"/>',
+  info:'<circle cx="12" cy="12" r="9"/><path d="M12 16v-4M12 8h.01"/>',
+  photo:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="9" cy="9" r="2"/><path d="m21 15-5-5L5 21"/>',
+  coins:'<circle cx="12" cy="12" r="9"/><path d="M14.5 9.5c-.5-1-1.5-1.5-2.5-1.5-1.4 0-2.5.8-2.5 2s1.1 1.6 2.5 2 2.5.8 2.5 2-1.1 2-2.5 2c-1 0-2-.5-2.5-1.5M12 6.5V8M12 16v1.5"/>',
+  tv:'<rect x="2" y="4" width="20" height="13" rx="2"/><path d="M8 21h8M12 17v4"/>',
+  table:'<path d="M3 8h18M5 8v12M19 8v12M5 13h14"/>',
+  chair:'<path d="M7 3h10v8H7zM6 11h12M7 11l-1 10M17 11l1 10M8 16h8"/>',
+  speaker:'<rect x="5" y="2" width="14" height="20" rx="3"/><circle cx="12" cy="14" r="4"/><circle cx="12" cy="6.5" r="1"/>',
+  users:'<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 3.5a4 4 0 0 1 0 8M22 21a7 7 0 0 0-4-6.3"/>',
+};
+const ic = (n, s = 20) => `<svg class="i" width="${s}" height="${s}" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${P[n]}</svg>`;
+
+/* ---------- flat illustrations ---------- */
+const sv = inner => `<svg viewBox="0 0 320 200" preserveAspectRatio="xMidYMid slice" aria-hidden="true">${inner}</svg>`;
+const ART = {
+  tv: sv(`<rect width="320" height="200" fill="#F6E2C3"/><rect y="164" width="320" height="36" fill="#EBCFA6"/>
+    <rect x="238" y="36" width="44" height="34" rx="3" fill="#fff" stroke="#C98B52" stroke-width="4"/><path d="M244 64l12-14 8 9 6-6 8 11z" fill="#E5401D"/>
+    <rect x="70" y="128" width="180" height="40" rx="4" fill="#C98B52"/><path d="M130 133v30M190 133v30" stroke="#A86F3C" stroke-width="3"/>
+    <rect x="80" y="166" width="7" height="12" fill="#8A5A2E"/><rect x="233" y="166" width="7" height="12" fill="#8A5A2E"/>
+    <rect x="96" y="48" width="128" height="78" rx="5" fill="#1B1B1B"/><rect x="102" y="54" width="116" height="66" fill="#F79A3E"/>
+    <rect x="102" y="88" width="116" height="32" fill="#EF6A5A"/><circle cx="160" cy="88" r="14" fill="#FCD35B"/>
+    <path d="M102 120l26-24 18 14 20-22 26 22 26-18v28z" fill="#5B3A78"/><rect x="154" y="126" width="12" height="4" fill="#1B1B1B"/>
+    <rect x="34" y="140" width="24" height="26" rx="3" fill="#E5401D"/>
+    <path d="M46 141c-14-10-16-30-4-40 2 14 6 26 4 40zM46 141c10-14 26-18 34-12-10 4-22 8-34 12zM46 141c-8-16-26-20-32-14 10 4 22 8 32 14z" fill="#3E8E5A"/>`),
+  table: sv(`<rect width="320" height="200" fill="#DCEAD9"/><rect y="166" width="320" height="34" fill="#C5DBC1"/>
+    <path d="M160 0v36" stroke="#151513" stroke-width="2"/><path d="M138 56a22 20 0 0 1 44 0z" fill="#E5401D"/><ellipse cx="160" cy="58" rx="8" ry="3" fill="#FCD35B"/>
+    <rect x="76" y="80" width="22" height="42" rx="5" fill="#E5401D"/><rect x="126" y="80" width="22" height="42" rx="5" fill="#E5401D"/>
+    <rect x="176" y="80" width="22" height="42" rx="5" fill="#E5401D"/><rect x="226" y="80" width="22" height="42" rx="5" fill="#E5401D"/>
+    <rect x="52" y="118" width="216" height="12" rx="3" fill="#C98B52"/><rect x="66" y="130" width="8" height="42" fill="#A86F3C"/><rect x="246" y="130" width="8" height="42" fill="#A86F3C"/>
+    <ellipse cx="108" cy="116" rx="15" ry="3.5" fill="#fff"/><ellipse cx="160" cy="116" rx="15" ry="3.5" fill="#fff"/><ellipse cx="212" cy="116" rx="15" ry="3.5" fill="#fff"/>
+    <rect x="132" y="100" width="4" height="16" fill="#fff" opacity=".85"/><rect x="184" y="100" width="4" height="16" fill="#fff" opacity=".85"/>`),
+  chairs: sv(`<rect width="320" height="200" fill="#E1E4F2"/><rect y="168" width="320" height="32" fill="#CCD1E8"/>
+    ${[66,138,210].map(x => `<g transform="translate(${x},0)"><rect x="0" y="48" width="44" height="36" rx="7" fill="#151513"/>
+    <path d="M6 84 -2 170M38 84l10 86" stroke="#151513" stroke-width="5" stroke-linecap="round"/><path d="M2 140h40" stroke="#151513" stroke-width="4"/>
+    <rect x="-6" y="110" width="56" height="11" rx="4" fill="#E5401D"/></g>`).join('')}`),
+  speaker: sv(`<rect width="320" height="200" fill="#F0DDE6"/><rect y="168" width="320" height="32" fill="#E4C6D3"/>
+    <rect x="128" y="46" width="64" height="124" rx="18" fill="#151513"/><circle cx="160" cy="130" r="23" fill="#2F2F2D"/><circle cx="160" cy="130" r="10" fill="#E5401D"/><circle cx="160" cy="78" r="9" fill="#2F2F2D"/>
+    <path d="M208 98a40 40 0 0 1 0 52M224 84a62 62 0 0 1 0 80" stroke="#E5401D" stroke-width="5" fill="none" stroke-linecap="round"/>
+    <path d="M112 98a40 40 0 0 0 0 52M96 84a62 62 0 0 0 0 80" stroke="#E5401D" stroke-width="5" fill="none" stroke-linecap="round"/>`),
+  projector: sv(`<rect width="320" height="200" fill="#DCE4EE"/><rect y="168" width="320" height="32" fill="#C7D4E3"/>
+    <path d="M194 114 320 36v150z" fill="#FCE97A" opacity=".75"/>
+    <rect x="88" y="96" width="124" height="58" rx="12" fill="#FAFAF7" stroke="#151513" stroke-width="4"/>
+    <circle cx="180" cy="125" r="17" fill="#151513"/><circle cx="180" cy="125" r="7" fill="#6487B0"/>
+    <path d="M104 112h40M104 123h40M104 134h40" stroke="#151513" stroke-width="3" stroke-linecap="round"/>
+    <rect x="102" y="154" width="12" height="10" fill="#151513"/><rect x="186" y="154" width="12" height="10" fill="#151513"/>`),
+};
+
+
+ART.dinnerware = sv(`<rect width="320" height="200" fill="#F3E4C8"/><rect y="168" width="320" height="32" fill="#E4D2B0"/><ellipse cx="160" cy="124" rx="100" ry="39" fill="#E5BA85"/><ellipse cx="160" cy="112" rx="84" ry="49" fill="#fff"/><ellipse cx="160" cy="112" rx="61" ry="32" fill="#F3E4C8"/><ellipse cx="160" cy="112" rx="39" ry="20" fill="#fff"/><path d="M68 56v100M54 56v44M60 56v44M68 56v44M248 56v100M238 56q-15 40 10 44" stroke="#B97B3F" stroke-width="5" fill="none"/>`);
+ART.games = sv(`<rect width="320" height="200" fill="#E6E9F1"/><rect y="168" width="320" height="32" fill="#CED4E1"/><g transform="translate(63 45) rotate(-8 78 57)"><rect width="160" height="115" rx="10" fill="#E5401D"/><rect x="14" y="14" width="132" height="87" rx="6" fill="#F2EE5C"/><path d="M35 80L67 34l35 42 25-26" stroke="#151513" stroke-width="7" stroke-linecap="round" stroke-linejoin="round" fill="none"/><circle cx="67" cy="34" r="10" fill="#E5401D"/></g><circle cx="235" cy="145" r="18" fill="#fff"/><circle cx="235" cy="145" r="6" fill="#151513"/>`);
+/* ---------- data ---------- */
+const LENDERS = {
+  jordan:{name:'Jordan T.', first:'Jordan', initials:'JT', color:'#CFE2F6', since:'2025', reply:'replies in 5 min', street:'W 118th St', walk:4, x:150, y:62},
+  priya:{name:'Priya S.', first:'Priya', initials:'PS', color:'#F7D3DF', since:'2024', reply:'replies in 15 min', street:'Amsterdam Ave & 117th', walk:7, x:232, y:150},
+  maya:{name:'Maya R.', first:'Maya', initials:'MR', color:'#F6CFA8', since:'2024', reply:'replies in 10 min', street:'W 120th St', walk:6, x:116, y:136},
+  leo:{name:'Leo M.', first:'Leo', initials:'LM', color:'#D9E7C9', since:'2026', reply:'replies in 20 min', street:'Morningside Dr', walk:9, x:262, y:70},
+};
+const ITEMS = {
+  table:{name:'Extendable dining table', short:'Table', price:12, lender:'jordan', dist:'0.3 mi', art:'table', rating:4.8, reviews:19,
+    comes:['2 extra leaves','Tablecloth','Seats up to 8'], review:'Sturdy, and the leaves slide in with no tools. Jordan helped me carry it to the elevator.', reviewer:'Chris, Oct 12'},
+  chairs:{name:'Folding chairs', short:'Chairs', per:2, lender:'priya', dist:'0.5 mi', art:'chairs', rating:4.9, reviews:27,
+    comes:['Seat cushions','Carry strap'], review:'Comfier than I expected for folding chairs. Clean and easy to pick up.', reviewer:'Dana, Oct 3'},
+  tv:{name:'55" 4K Smart TV', short:'TV', price:15, lender:'maya', dist:'0.4 mi', art:'tv', rating:4.9, reviews:32,
+    comes:['Remote','HDMI cable','Stand'], review:'Perfect for our watch party. Maya even left the remote charged.', reviewer:'Sam, Sep 28'},
+  speaker:{name:'Bluetooth speaker', short:'Speaker', price:6, lender:'leo', dist:'0.6 mi', art:'speaker', rating:4.7, reviews:11,
+    comes:['Charging cable','12 hr battery'], review:'Loud enough for a full apartment. Battery lasted the whole night.', reviewer:'Ana, Oct 9'},
+};
+const ORDER = ['table','chairs','dinnerware','tv','projector','speaker','games','lights','decor','cooler'];
+const OCCASIONS = {
+  dinner:{label:'Dinner party',emoji:'🍽️',defaults:['table','chairs','dinnerware'],suggest:['table','chairs','dinnerware','speaker']},
+  movie:{label:'Movie night',emoji:'🎬',defaults:['tv','speaker'],suggest:['tv','projector','speaker','chairs']},
+  game:{label:'Game night',emoji:'🎲',defaults:['games','chairs'],suggest:['games','table','chairs','speaker']},
+  celebration:{label:'Celebration',emoji:'🎉',defaults:['chairs','speaker'],suggest:['chairs','table','speaker','dinnerware']},
+  custom:{label:'Custom event',emoji:'✨',defaults:[],suggest:[]},
+};
+Object.assign(ITEMS,{
+  dinnerware:{name:'Dinnerware set for 6',short:'Dinnerware',price:8,lender:'priya',dist:'0.5 mi',art:'dinnerware',rating:4.9,reviews:18,comes:['6 plates','6 glasses','Cutlery'],review:'Everything was clean and ready.',reviewer:'Ali, Oct 8'},
+  projector:{name:'Projector + screen',short:'Projector',price:12,lender:'maya',dist:'0.4 mi',art:'projector',rating:4.8,reviews:24,comes:['Screen','HDMI cable'],review:'Perfect for movie night.',reviewer:'Ana, Oct 7'},
+  games:{name:'Board games bundle',short:'Board games',price:5,lender:'leo',dist:'0.6 mi',art:'games',rating:4.8,reviews:15,comes:['Catan','Splendor','Uno'],review:'Great variety for six friends.',reviewer:'Nina, Oct 5'},
+});
+
+ART.lights = sv(`<rect width="320" height="200" fill="#202946"/><path d="M8 50Q160 115 312 45" stroke="#F9E6A9" stroke-width="3" fill="none"/>${[25,72,120,168,216,264,300].map((x,i)=>`<g><path d="M${x} ${i%2?76:57}v18" stroke="#e5d5b4" stroke-width="2"/><circle cx="${x}" cy="${i%2?96:77}" r="12" fill="#FFE69B"/></g>`).join('')}`);
+ART.decor = sv(`<rect width="320" height="200" fill="#F6E5E5"/><rect y="168" width="320" height="32" fill="#E9CFCC"/><path d="M50 0v60M270 0v60M160 0v60" stroke="#DDAE81" stroke-width="3"/><circle cx="50" cy="75" r="24" fill="#E5401D"/><circle cx="160" cy="86" r="30" fill="#F2EE5C"/><circle cx="270" cy="75" r="24" fill="#F7A975"/><path d="M50 99L48 142M160 116L163 151M270 99L271 142" stroke="#BA9479" stroke-width="2"/>`);
+ART.cooler = sv(`<rect width="320" height="200" fill="#D9EAF3"/><rect y="166" width="320" height="34" fill="#BFD9E9"/><rect x="62" y="76" width="194" height="99" rx="18" fill="#E5401D"/><rect x="62" y="71" width="194" height="34" rx="10" fill="#FAFAF7"/><path d="M123 75V55a38 38 0 0 1 74 0v20" stroke="#151513" stroke-width="9" fill="none"/><rect x="147" y="119" width="25" height="35" rx="5" fill="#F2EE5C"/>`);
+Object.assign(ITEMS,{
+  lights:{name:'Warm string lights',short:'Lights',price:7,lender:'jordan',dist:'0.3 mi',art:'lights',rating:4.9,reviews:13,comes:['String lights','Wall-safe clips'],review:'Made the room feel festive.',reviewer:'Mara, Oct 9'},
+  decor:{name:'Party decor kit',short:'Decorations',price:9,lender:'priya',dist:'0.5 mi',art:'decor',rating:4.8,reviews:12,comes:['Banners','Decor pieces'],review:'Everything was in great shape.',reviewer:'Chris, Oct 2'},
+  cooler:{name:'Party drink cooler',short:'Cooler',price:8,lender:'maya',dist:'0.4 mi',art:'cooler',rating:4.8,reviews:16,comes:['Lid','Handles'],review:'Kept our drinks cool all night.',reviewer:'Dev, Oct 7'},
+});
+/* Each alternative listing has a distinct illustration of its actual item. */
+ART.tableCompact = sv("<rect width=\"320\" height=\"200\" fill=\"#F3E9D9\"/><rect y=\"167\" width=\"320\" height=\"33\" fill=\"#E1CEB6\"/><rect x=\"84\" y=\"67\" width=\"152\" height=\"11\" rx=\"5\" fill=\"#C89365\"/><rect x=\"76\" y=\"77\" width=\"168\" height=\"15\" rx=\"5\" fill=\"#F6F0E8\" stroke=\"#AA8B72\" stroke-width=\"2\"/><path d=\"M105 92l106 75M211 92l-106 75\" stroke=\"#2D4544\" stroke-width=\"8\" stroke-linecap=\"round\"/><circle cx=\"105\" cy=\"166\" r=\"4\" fill=\"#1A2829\"/><circle cx=\"211\" cy=\"166\" r=\"4\" fill=\"#1A2829\"/><path d=\"M160 92v62\" stroke=\"#6E8885\" stroke-width=\"3\"/><path d=\"M112 107h97\" stroke=\"#D0BCA7\" stroke-width=\"2\" stroke-dasharray=\"5 6\"/><rect x=\"141\" y=\"57\" width=\"38\" height=\"10\" rx=\"4\" fill=\"#F0B76D\"/><path d=\"M152 57v-18M169 57v-20\" stroke=\"#356F5D\" stroke-width=\"4\" stroke-linecap=\"round\"/><circle cx=\"150\" cy=\"38\" r=\"7\" fill=\"#72A989\"/><circle cx=\"170\" cy=\"32\" r=\"8\" fill=\"#527F73\"/>");
+ART.chairsCushioned = sv("<rect width=\"320\" height=\"200\" fill=\"#E1F0E9\"/><rect y=\"171\" width=\"320\" height=\"29\" fill=\"#CEE3D8\"/><g transform=\"translate(58 0)\"><rect x=\"8\" y=\"35\" width=\"55\" height=\"62\" rx=\"14\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"4\"/><rect x=\"14\" y=\"41\" width=\"43\" height=\"48\" rx=\"10\" fill=\"#EBC6A1\"/><rect x=\"5\" y=\"100\" width=\"62\" height=\"17\" rx=\"9\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"3\"/><path d=\"M15 118 7 174M57 118l9 56\" stroke=\"#383B3A\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M13 146h48\" stroke=\"#6E523E\" stroke-width=\"3\"/><rect x=\"22\" y=\"107\" width=\"29\" height=\"5\" rx=\"3\" fill=\"#EBC6A1\"/></g><g transform=\"translate(132 -8)\"><rect x=\"8\" y=\"35\" width=\"55\" height=\"62\" rx=\"14\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"4\"/><rect x=\"14\" y=\"41\" width=\"43\" height=\"48\" rx=\"10\" fill=\"#EBC6A1\"/><rect x=\"5\" y=\"100\" width=\"62\" height=\"17\" rx=\"9\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"3\"/><path d=\"M15 118 7 174M57 118l9 56\" stroke=\"#383B3A\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M13 146h48\" stroke=\"#6E523E\" stroke-width=\"3\"/><rect x=\"22\" y=\"107\" width=\"29\" height=\"5\" rx=\"3\" fill=\"#EBC6A1\"/></g><g transform=\"translate(206 0)\"><rect x=\"8\" y=\"35\" width=\"55\" height=\"62\" rx=\"14\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"4\"/><rect x=\"14\" y=\"41\" width=\"43\" height=\"48\" rx=\"10\" fill=\"#EBC6A1\"/><rect x=\"5\" y=\"100\" width=\"62\" height=\"17\" rx=\"9\" fill=\"#C79C77\" stroke=\"#6E523E\" stroke-width=\"3\"/><path d=\"M15 118 7 174M57 118l9 56\" stroke=\"#383B3A\" stroke-width=\"5\" stroke-linecap=\"round\"/><path d=\"M13 146h48\" stroke=\"#6E523E\" stroke-width=\"3\"/><rect x=\"22\" y=\"107\" width=\"29\" height=\"5\" rx=\"3\" fill=\"#EBC6A1\"/></g>");
+ART.dinnerwareCeramic = sv("<rect width=\"320\" height=\"200\" fill=\"#E7E1EC\"/><rect y=\"155\" width=\"320\" height=\"45\" fill=\"#D5CADC\"/><ellipse cx=\"161\" cy=\"160\" rx=\"140\" ry=\"21\" fill=\"#B5A6BC\"/><ellipse cx=\"152\" cy=\"137\" rx=\"103\" ry=\"34\" fill=\"#8B777F\"/><ellipse cx=\"152\" cy=\"130\" rx=\"99\" ry=\"32\" fill=\"#EFE1D7\"/><ellipse cx=\"152\" cy=\"130\" rx=\"72\" ry=\"23\" fill=\"#BDA598\"/><ellipse cx=\"152\" cy=\"130\" rx=\"57\" ry=\"16\" fill=\"#EADBCB\"/><ellipse cx=\"145\" cy=\"102\" rx=\"62\" ry=\"20\" fill=\"#BF9C8C\"/><ellipse cx=\"145\" cy=\"97\" rx=\"55\" ry=\"14\" fill=\"#F3E8D9\"/><path d=\"M145 115v14\" stroke=\"#B5907E\" stroke-width=\"2\"/><ellipse cx=\"145\" cy=\"81\" rx=\"34\" ry=\"12\" fill=\"#A56D65\"/><ellipse cx=\"145\" cy=\"78\" rx=\"30\" ry=\"9\" fill=\"#DDAFA1\"/><path d=\"M221 80h40v59q-20 19-40 0z\" fill=\"#9CABA6\"/><ellipse cx=\"241\" cy=\"80\" rx=\"20\" ry=\"5\" fill=\"#E6F0E8\"/><path d=\"M261 88q24-7 16 18q-5 11-16 4\" fill=\"none\" stroke=\"#9CABA6\" stroke-width=\"8\"/><path d=\"M62 79v77M53 79v34M58 79v34M67 79v34\" stroke=\"#B99B77\" stroke-width=\"4\" stroke-linecap=\"round\"/>");
+ART.tv50 = sv("<rect width=\"320\" height=\"200\" fill=\"#D6E8F4\"/><rect y=\"170\" width=\"320\" height=\"30\" fill=\"#BDD9E5\"/><rect x=\"47\" y=\"38\" width=\"226\" height=\"129\" rx=\"9\" fill=\"#252936\"/><rect x=\"55\" y=\"46\" width=\"210\" height=\"113\" rx=\"3\" fill=\"#77C6E5\"/><rect x=\"55\" y=\"98\" width=\"210\" height=\"61\" fill=\"#2DAB7A\"/><path d=\"M55 107h210M159 98v61M96 98l-13 61M221 98l15 61\" stroke=\"#B4F2CF\" stroke-width=\"2\" fill=\"none\"/><circle cx=\"159\" cy=\"130\" r=\"15\" stroke=\"#E5FFE9\" stroke-width=\"2\" fill=\"none\"/><path d=\"M55 73h210\" stroke=\"#B1E4F4\" stroke-width=\"2\"/><circle cx=\"139\" cy=\"112\" r=\"6\" fill=\"#F6F4F1\"/><path d=\"M136 119l-8 16m13-16 10 18\" stroke=\"#FFFFFF\" stroke-width=\"4\"/><path d=\"M148 164v8M126 173h44\" stroke=\"#252936\" stroke-width=\"7\" stroke-linecap=\"round\"/><rect x=\"233\" y=\"168\" width=\"12\" height=\"24\" rx=\"5\" fill=\"#353C48\"/>");
+ART.projectorMini = sv("<rect width=\"320\" height=\"200\" fill=\"#302A52\"/><path d=\"M205 108 320 17v151z\" fill=\"#FEE6A0\" opacity=\".28\"/><rect x=\"52\" y=\"131\" width=\"219\" height=\"14\" rx=\"5\" fill=\"#B18F77\"/><path d=\"M72 145v55M250 145v55\" stroke=\"#6D5145\" stroke-width=\"10\"/><rect x=\"115\" y=\"91\" width=\"113\" height=\"56\" rx=\"17\" fill=\"#E6F5F2\"/><rect x=\"117\" y=\"96\" width=\"109\" height=\"40\" rx=\"14\" fill=\"#F8FFFB\"/><circle cx=\"188\" cy=\"116\" r=\"23\" fill=\"#455B84\"/><circle cx=\"188\" cy=\"116\" r=\"15\" fill=\"#B2DFFC\"/><circle cx=\"188\" cy=\"116\" r=\"7\" fill=\"#FFFFFF\"/><path d=\"M134 113h22M134 122h22\" stroke=\"#B6C9CF\" stroke-width=\"4\" stroke-linecap=\"round\"/><rect x=\"145\" y=\"147\" width=\"9\" height=\"8\" rx=\"2\" fill=\"#698282\"/><rect x=\"182\" y=\"147\" width=\"9\" height=\"8\" rx=\"2\" fill=\"#698282\"/><rect x=\"30\" y=\"34\" width=\"88\" height=\"70\" rx=\"5\" fill=\"#4F496F\"/><path d=\"M42 85 66 54l13 17 14-15 15 29z\" fill=\"#AE9BE5\"/>");
+ART.speakerParty = sv("<rect width=\"320\" height=\"200\" fill=\"#29213E\"/><rect y=\"170\" width=\"320\" height=\"30\" fill=\"#413151\"/><path d=\"M52 145Q71 89 43 58\" stroke=\"#E446AD\" stroke-width=\"5\" fill=\"none\"/><path d=\"M268 157Q242 88 275 52\" stroke=\"#40D5ED\" stroke-width=\"5\" fill=\"none\"/><rect x=\"123\" y=\"24\" width=\"80\" height=\"160\" rx=\"18\" fill=\"#171922\" stroke=\"#454654\" stroke-width=\"5\"/><circle cx=\"163\" cy=\"123\" r=\"33\" fill=\"#262936\" stroke=\"#FF5BCB\" stroke-width=\"8\"/><circle cx=\"163\" cy=\"123\" r=\"20\" fill=\"#5B3B75\"/><circle cx=\"163\" cy=\"123\" r=\"12\" fill=\"#151521\"/><circle cx=\"163\" cy=\"65\" r=\"19\" fill=\"#252938\" stroke=\"#58DDF2\" stroke-width=\"6\"/><circle cx=\"163\" cy=\"65\" r=\"8\" fill=\"#151521\"/><circle cx=\"146\" cy=\"39\" r=\"3\" fill=\"#B0F4EC\"/><circle cx=\"156\" cy=\"39\" r=\"3\" fill=\"#FFD6FB\"/><path d=\"M67 49v31q-17-5-17 9q0 16 17 6\" stroke=\"#F4D76D\" stroke-width=\"5\" fill=\"none\"/><path d=\"M240 36v33q-17-5-17 8q0 16 17 5\" stroke=\"#5DE0EB\" stroke-width=\"5\" fill=\"none\"/>");
+ART.gamesFamily = sv("<rect width=\"320\" height=\"200\" fill=\"#FFF1CF\"/><rect y=\"167\" width=\"320\" height=\"33\" fill=\"#E8D7B2\"/><g transform=\"translate(66 46) rotate(-12 82 54)\"><rect width=\"164\" height=\"119\" rx=\"10\" fill=\"#197C88\"/><rect x=\"9\" y=\"9\" width=\"146\" height=\"100\" rx=\"6\" fill=\"#E9EFE6\"/><path d=\"M19 51h126M65 15v87M106 15v87\" stroke=\"#197C88\" stroke-width=\"4\"/><rect x=\"22\" y=\"20\" width=\"31\" height=\"25\" rx=\"3\" fill=\"#E5401D\"/><rect x=\"77\" y=\"64\" width=\"23\" height=\"26\" rx=\"3\" fill=\"#F2B938\"/><circle cx=\"130\" cy=\"35\" r=\"11\" fill=\"#77B18C\"/></g><g transform=\"translate(184 18) rotate(13)\"><rect width=\"61\" height=\"96\" rx=\"7\" fill=\"#E5401D\" stroke=\"#fff\" stroke-width=\"4\"/><ellipse cx=\"31\" cy=\"48\" rx=\"24\" ry=\"35\" fill=\"#F2DD61\" transform=\"rotate(23 31 48)\"/><path d=\"M18 48h28M32 34v28\" stroke=\"#E5401D\" stroke-width=\"5\"/></g><rect x=\"226\" y=\"130\" width=\"35\" height=\"35\" rx=\"5\" fill=\"#fff\" stroke=\"#D9C6A3\" stroke-width=\"3\" transform=\"rotate(-8 243 147)\"/><circle cx=\"238\" cy=\"139\" r=\"3\" fill=\"#151513\"/><circle cx=\"248\" cy=\"153\" r=\"3\" fill=\"#151513\"/><circle cx=\"235\" cy=\"156\" r=\"3\" fill=\"#151513\"/>");
+ART.lightsColor = sv("<rect width=\"320\" height=\"200\" fill=\"#1F2049\"/><rect y=\"170\" width=\"320\" height=\"30\" fill=\"#34356D\"/><path d=\"M57 29q106 67 211 0\" stroke=\"#F5F1DF\" stroke-width=\"3\" fill=\"none\"/><g><path d=\"M75 49v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"75\" cy=\"69\" r=\"12\" fill=\"#FA78CD\"/><circle cx=\"75\" cy=\"69\" r=\"22\" fill=\"#FA78CD\" opacity=\".2\"/></g><g><path d=\"M111 60v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"111\" cy=\"80\" r=\"12\" fill=\"#7DD9FC\"/><circle cx=\"111\" cy=\"80\" r=\"22\" fill=\"#7DD9FC\" opacity=\".2\"/></g><g><path d=\"M149 71v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"149\" cy=\"91\" r=\"12\" fill=\"#F3DC74\"/><circle cx=\"149\" cy=\"91\" r=\"22\" fill=\"#F3DC74\" opacity=\".2\"/></g><g><path d=\"M187 83v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"187\" cy=\"103\" r=\"12\" fill=\"#B196FF\"/><circle cx=\"187\" cy=\"103\" r=\"22\" fill=\"#B196FF\" opacity=\".2\"/></g><g><path d=\"M224 68v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"224\" cy=\"88\" r=\"12\" fill=\"#FF8E72\"/><circle cx=\"224\" cy=\"88\" r=\"22\" fill=\"#FF8E72\" opacity=\".2\"/></g><g><path d=\"M258 53v15\" stroke=\"#D7DEF3\" stroke-width=\"3\"/><circle cx=\"258\" cy=\"73\" r=\"12\" fill=\"#74F5C8\"/><circle cx=\"258\" cy=\"73\" r=\"22\" fill=\"#74F5C8\" opacity=\".2\"/></g><rect x=\"77\" y=\"130\" width=\"166\" height=\"19\" rx=\"7\" fill=\"#4A4E78\"/><path d=\"M87 138h146\" stroke=\"#FC79CF\" stroke-width=\"6\"/><path d=\"M94 148l-18 19M226 148l18 19\" stroke=\"#777AB2\" stroke-width=\"5\"/>");
+ART.decorBirthday = sv("<rect width=\"320\" height=\"200\" fill=\"#FBE1E8\"/><rect y=\"172\" width=\"320\" height=\"28\" fill=\"#F0C6D2\"/><path d=\"M0 22q160 70 320 0\" stroke=\"#D9A08E\" stroke-width=\"3\" fill=\"none\"/><path d=\"M23 28h26l-13 30z\" fill=\"#F2CE61\"/><path d=\"M65 38h26l-13 30z\" fill=\"#F38A9B\"/><path d=\"M107 45h26l-13 30z\" fill=\"#91C5C0\"/><path d=\"M149 48h26l-13 30z\" fill=\"#E9A5C6\"/><path d=\"M191 45h26l-13 30z\" fill=\"#F2CE61\"/><path d=\"M233 38h26l-13 30z\" fill=\"#F38A9B\"/><path d=\"M275 28h26l-13 30z\" fill=\"#91C5C0\"/><ellipse cx=\"157\" cy=\"164\" rx=\"94\" ry=\"15\" fill=\"#D9A7A6\"/><rect x=\"90\" y=\"119\" width=\"139\" height=\"40\" rx=\"11\" fill=\"#F5BFCC\"/><path d=\"M90 125q13 18 25 0q14 18 27 0q14 18 27 0q14 18 27 0q16 18 33 0\" stroke=\"#fff\" stroke-width=\"9\" fill=\"none\"/><rect x=\"108\" y=\"99\" width=\"105\" height=\"29\" rx=\"7\" fill=\"#FFE3A9\"/><path d=\"M108 112q21 14 35 0q19 15 35 0q20 15 35 0\" stroke=\"#F4ABC7\" stroke-width=\"6\" fill=\"none\"/><g><rect x=\"132\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#78C5BE\"/><path d=\"M134 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><g><rect x=\"161\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#F29DAB\"/><path d=\"M163 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><g><rect x=\"190\" y=\"82\" width=\"5\" height=\"20\" rx=\"2\" fill=\"#9A8FE0\"/><path d=\"M192 75q-8 8 0 13q8-5 0-13\" fill=\"#F9B439\"/></g><circle cx=\"49\" cy=\"108\" r=\"18\" fill=\"#EC7898\"/><path d=\"M49 126l-7 41\" stroke=\"#BE8294\" stroke-width=\"2\"/><circle cx=\"264\" cy=\"90\" r=\"21\" fill=\"#F4C558\"/><path d=\"M264 111l6 56\" stroke=\"#C8A46C\" stroke-width=\"2\"/>");
+ART.coolerLarge = sv("<rect width=\"320\" height=\"200\" fill=\"#DBE6F4\"/><rect y=\"174\" width=\"320\" height=\"26\" fill=\"#C1D5E8\"/><ellipse cx=\"160\" cy=\"170\" rx=\"114\" ry=\"16\" fill=\"#A6BDD1\"/><rect x=\"65\" y=\"62\" width=\"194\" height=\"112\" rx=\"18\" fill=\"#F5F7F6\" stroke=\"#93ACBA\" stroke-width=\"4\"/><rect x=\"65\" y=\"118\" width=\"194\" height=\"56\" rx=\"15\" fill=\"#7FA4B5\"/><rect x=\"62\" y=\"50\" width=\"201\" height=\"29\" rx=\"10\" fill=\"#FAFBF9\" stroke=\"#93ACBA\" stroke-width=\"4\"/><path d=\"M59 91h-18v42h18M266 91h18v42h-18\" stroke=\"#3B4954\" stroke-width=\"9\" fill=\"none\" stroke-linejoin=\"round\"/><rect x=\"146\" y=\"83\" width=\"29\" height=\"23\" rx=\"5\" fill=\"#D3DEE4\" stroke=\"#91AAB8\" stroke-width=\"2\"/><rect x=\"157\" y=\"126\" width=\"11\" height=\"20\" rx=\"3\" fill=\"#E0F0F4\"/><rect x=\"142\" y=\"142\" width=\"40\" height=\"10\" rx=\"5\" fill=\"#F3F7FA\"/><circle cx=\"98\" cy=\"158\" r=\"8\" fill=\"#415B69\"/><circle cx=\"229\" cy=\"158\" r=\"8\" fill=\"#415B69\"/>");
+
+/* Photo assets: Unsplash / Pexels, free license. These are representative stock photos. */
+const LISTING_PHOTOS = {
+  table: ['https://images.unsplash.com/photo-1740759546556-ff8aaf35ecf9?auto=format&fit=crop&w=960&q=82', 'Wooden dining table in a cozy dining room'],
+  tableCompact: ['https://images.unsplash.com/photo-1558395005-21408ae65920?auto=format&fit=crop&w=960&q=82', 'Compact folding bistro table and chairs'],
+  chairs: ['https://images.unsplash.com/photo-1553110503-b4388ef57dbe?auto=format&fit=crop&w=960&q=82', 'Stack of folding chairs'],
+  chairsCushioned: ['https://images.unsplash.com/photo-1521925141188-e43e549ca97d?auto=format&fit=crop&w=960&q=82', 'White wooden folding chairs'],
+  dinnerware: ['https://images.unsplash.com/photo-1696929256270-da19e4ba911a?auto=format&fit=crop&w=960&q=82', 'Plates and glasses set for dinner'],
+  dinnerwareCeramic: ['https://images.unsplash.com/photo-1737681707230-04eebda96529?auto=format&fit=crop&w=960&q=82', 'Stacked ceramic dinner plates'],
+  tv: ['https://images.unsplash.com/photo-1735078254602-b7818942c324?auto=format&fit=crop&w=960&q=82', 'Large flat-screen TV in a living room'],
+  tv50: ['https://images.unsplash.com/photo-1712928247899-2932f4c7dea3?auto=format&fit=crop&w=960&q=82', 'Flat-screen TV in a comfortable living room'],
+  projector: ['https://images.unsplash.com/photo-1637656375538-9dfe600ccfd2?auto=format&fit=crop&w=960&q=82', 'Portable white projector'],
+  projectorMini: ['https://images.unsplash.com/photo-1638154320388-93039efa870b?auto=format&fit=crop&w=960&q=82', 'Mini projector with remote'],
+  speaker: ['https://images.unsplash.com/photo-1502556112530-246c3be76309?auto=format&fit=crop&w=960&q=82', 'Bluetooth speaker on a table'],
+  speakerParty: ['https://images.unsplash.com/photo-1732229033839-c76b4071c449?auto=format&fit=crop&w=960&q=82', 'Portable party speaker'],
+  games: ['https://images.unsplash.com/photo-1769288361254-abb4783a6070?auto=format&fit=crop&w=960&q=82', 'Catan and Splendor board game boxes'],
+  gamesFamily: ['https://images.unsplash.com/photo-1769288361029-187caa2a88a3?auto=format&fit=crop&w=960&q=82', 'Collection of family board games'],
+  lights: ['https://images.unsplash.com/photo-1780337675943-f63d92324e7b?auto=format&fit=crop&w=960&q=82', 'Warm string lights over a gathering area'],
+  lightsColor: ['https://images.unsplash.com/photo-1767457393612-ccaa7528c482?auto=format&fit=crop&w=960&q=82', 'Colorful party bunting and string lights'],
+  decor: ['https://images.unsplash.com/photo-1767070807074-67d5db511d78?auto=format&fit=crop&w=960&q=82', 'Party decoration and balloon arches'],
+  decorBirthday: ['https://images.unsplash.com/photo-1755704282718-1afe3790082b?auto=format&fit=crop&w=960&q=82', 'Birthday party decorations and balloons'],
+  cooler: ['https://images.pexels.com/photos/8980722/pexels-photo-8980722.jpeg?auto=compress&cs=tinysrgb&w=960', 'Cooler full of ice and chilled bottled water'],
+  coolerLarge: ['https://images.pexels.com/photos/33206680/pexels-photo-33206680/free-photo-of-refreshing-bottled-water-in-yellow-cooler.jpeg?auto=compress&cs=tinysrgb&w=960', 'Large insulated drinks cooler']
+};
+for (const [key, [src, alt]] of Object.entries(LISTING_PHOTOS)) {
+  ART[key] = `<img class="listing-photo" src="${src}" alt="${alt}" loading="lazy" decoding="async">`;
+}
+
+const ALTS = {
+  table:[{name:'Compact folding table',short:'Table',price:10,lender:'leo',dist:'0.6 mi',art:'tableCompact',rating:4.7,reviews:12,comes:['Seats 6'],available:['fri23','sat24','fri30','sat31']}],
+  chairs:[{name:'Cushioned folding chairs',short:'Chairs',per:3,lender:'jordan',dist:'0.3 mi',art:'chairsCushioned',rating:4.8,reviews:20,comes:['Seat cushions'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  dinnerware:[{name:'Ceramic dinnerware for 6',short:'Dinnerware',price:10,lender:'jordan',dist:'0.3 mi',art:'dinnerwareCeramic',rating:4.8,reviews:17,comes:['Plates','Glasses','Cutlery'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  tv:[{name:'50-inch Smart TV',short:'TV',price:13,lender:'priya',dist:'0.5 mi',art:'tv50',rating:4.7,reviews:14,comes:['Remote','HDMI cable'],available:['fri23','sat24','fri30','sat31']}],
+  projector:[{name:'Mini projector kit',short:'Projector',price:10,lender:'jordan',dist:'0.3 mi',art:'projectorMini',rating:4.7,reviews:10,comes:['HDMI cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  speaker:[{name:'Portable party speaker',short:'Speaker',price:8,lender:'priya',dist:'0.5 mi',art:'speakerParty',rating:4.9,reviews:31,comes:['Charging cable'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  games:[{name:'Family games collection',short:'Board games',price:4,lender:'maya',dist:'0.4 mi',art:'gamesFamily',rating:4.9,reviews:22,comes:['Uno','Exploding Kittens'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  lights:[{name:'Color party lighting',short:'Lights',price:6,lender:'leo',dist:'0.6 mi',art:'lightsColor',rating:4.7,reviews:9,comes:['Power supply'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  decor:[{name:'Birthday decor pack',short:'Decorations',price:6,lender:'jordan',dist:'0.3 mi',art:'decorBirthday',rating:4.9,reviews:8,comes:['Banners','Decor pieces'],available:['fri23','sat24','sun25','fri30','sat31']}],
+  cooler:[{name:'Large insulated cooler',short:'Cooler',price:11,lender:'leo',dist:'0.6 mi',art:'coolerLarge',rating:4.8,reviews:10,comes:['Carry handles'],available:['fri23','sat24','sun25','fri30','sat31']}],
+};
+const DATES = [
+  {k:'fri23', dow:'Fri', next:'Sat', d:23, nd:'Oct 24'}, {k:'sat24', dow:'Sat', next:'Sun', d:24, nd:'Oct 25'},
+  {k:'sun25', dow:'Sun', next:'Mon', d:25, nd:'Oct 26'}, {k:'fri30', dow:'Fri', next:'Sat', d:30, nd:'Oct 31'},
+  {k:'sat31', dow:'Sat', next:'Sun', d:31, nd:'Nov 1'},
+];
+const MINE = [
+  {art:'projector', name:'Projector + screen', price:10, earned:60, nights:6},
+  {art:'speaker', name:'Party speaker', price:6, earned:36, nights:6},
+  {art:'table', name:'Card table', price:8, earned:40, nights:5},
+];
+const WEEKS = [['Sep 30',16],['Oct 7',40],['Oct 14',32],['This wk',48]];
+const DAYNAMES = ['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+
+const fresh = () => ({
+  date:'sat24', people:6, occasion:'dinner', customOccasion:'', budget:55, priority:'balanced', radius:1, minRating:0, swaps:{}, need:Object.fromEntries(ORDER.map(k=>[k,false])), marketCat:'all', marketSearch:'', marketMode:'browse', preview:null, delivery:false,
+  item:'table', fav:{}, booked:null, ret:{}, rate:{}, request:null,
+  listed:false, lname:'4 folding chairs', lcat:'Chairs', lprice:8, ldays:['Fri','Sat','Sun'], lobby:true,
+});
+let S = fresh();
+
+/* ---------- helpers ---------- */
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const day = () => DATES.find(d => d.k === S.date);
+const dateLabel = () => `${day().dow}, Oct ${day().d}`;
+const nextLabel = () => `${day().next}, ${day().nd}`;
+const occasionLabel = () => S.occasion==='custom' ? (S.customOccasion.trim()||'Custom event') : OCCASIONS[S.occasion].label;
+const selected = () => ORDER.filter(k => S.need[k]);
+  const listings = k => [ITEMS[k],...(ALTS[k]||[])];
+  const itemFor = k => listings(k)[Number.isInteger(S.swaps[k])?S.swaps[k]:0] || ITEMS[k];
+  const itemPrice = (k,it) => k === 'chairs' ? it.per*S.people : k === 'dinnerware' ? Math.ceil(S.people/6)*it.price : it.price;
+  const price = k => itemPrice(k,itemFor(k));
+  const title = k => k === 'chairs' ? `${S.people} ${itemFor(k).name.toLowerCase()}` : k === 'dinnerware' ? `Dinnerware for ${S.people}` : itemFor(k).name;
+  const blocked = k => S.swaps[k] === null;
+  const lendersOf = ks => [...new Set(ks.filter(k=>!blocked(k)).map(k=>itemFor(k).lender))];
+  const sub = ks => ks.reduce((a,k)=>a+(blocked(k)?0:price(k)),0);
+  const fee = amount => Math.round(amount*15)/100;
+  const available = it => !it.available || it.available.includes(S.date);
+  const eligible = it => available(it) && parseFloat(it.dist)<=S.radius && it.rating>=S.minRating;
+  const candidates = k => listings(k).map((it,index)=>({it,index})).filter(o=>eligible(o.it));
+  function recommend(){
+    const picks={},seen=new Set();let currentTotal=0;
+    selected().forEach(k=>{
+      const opts=candidates(k);
+      if(!opts.length){picks[k]=null;return;}
+      let best=opts[0],bestScore=Infinity;
+      opts.forEach(o=>{
+        const it=o.it,amount=itemPrice(k,it),walk=LENDERS[it.lender].walk;
+        const raw=S.priority==='price'?amount*2+walk*.2:
+          S.priority==='nearby'?walk*2+amount*.15:
+          S.priority==='rating'?(5-it.rating)*40+amount*.15+walk*.2:
+          amount*.35+walk*.55+(5-it.rating)*10-(seen.has(it.lender)?5:0);
+        const over=Math.max(0,currentTotal+amount-S.budget),score=raw+over*(S.priority==='price'?2:.85);
+        if(score<bestScore){bestScore=score;best=o;}
+      });
+      picks[k]=best.index;seen.add(best.it.lender);currentTotal+=itemPrice(k,best.it);
+    });
+    S.swaps=picks;
+  }
+const maxWalk = ls => ls.length ? Math.max(...ls.map(l=>LENDERS[l].walk)) : 0;
+const names = ls => { const n = ls.map(l => LENDERS[l].name); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
+const firsts = ls => { const n = ls.map(l => LENDERS[l].first); return n.length < 3 ? n.join(' and ') : n.slice(0,-1).join(', ') + ' and ' + n.at(-1); };
+
+const marketLink = () => `<button class="top-market" data-act="browse" data-v="all" aria-label="Browse all marketplace listings">${ic('search',16)} Browse</button>`;
+const topbar = (t, right) => `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><div class="ttl">${t}</div>${right===undefined?marketLink():right}</div>`;
+const tabbar = on => `<nav class="tabbar" aria-label="Main">${[['home','home','Home'],['market','search','Market'],['booked','calendar','Bookings'],['earnings','tag','Lend']].map(([k,i,l]) =>
+  `<button class="tab ${on===k?'on':''}" data-act="tab" data-v="${k}" ${on===k?'aria-current="page"':''}>${ic(i,23)}${l}</button>`).join('')}</nav>`;
+
+function mapSvg(ls){
+  const you = {x:186, y:108};
+  const streets = Array.from({length:8}, (_, i) => `<path d="M60 ${14 + i*26}H300" stroke="#fff" stroke-width="5"/>`).join('');
+  const pins = ls.map(l => { const L = LENDERS[l]; return `<g transform="translate(${L.x},${L.y})"><path d="M0 0c-9-11-14-16-14-23a14 14 0 0 1 28 0c0 7-5 12-14 23z" fill="#E5401D"/><text y="-19.5" text-anchor="middle" font-size="9.5" font-weight="800" fill="#fff" font-family="Plus Jakarta Sans, system-ui, sans-serif">${L.initials}</text></g>`; }).join('');
+  return `<svg viewBox="0 0 350 200" role="img" aria-label="Map of Morningside Heights showing you and ${ls.length} lenders nearby">
+    <rect width="350" height="200" fill="#EEF0E6"/>
+    <rect width="34" height="200" fill="#CFE0EC"/><rect x="34" width="26" height="200" fill="#CFE3C2"/>
+    <path d="M302 0h48v200h-48c9-60-6-120 0-200z" fill="#CFE3C2"/>
+    ${streets}
+    <path d="M74 0v200" stroke="#fff" stroke-width="7"/><path d="M142 0v200" stroke="#fff" stroke-width="10"/>
+    <path d="M216 0v200" stroke="#fff" stroke-width="8"/><path d="M290 0v200" stroke="#fff" stroke-width="6"/>
+    <g font-family="Plus Jakarta Sans, system-ui, sans-serif" font-size="8.5" font-weight="700" fill="#8E8D84">
+      <text x="147" y="195">Broadway</text><text x="221" y="195">Amsterdam Av</text><text x="64" y="37">W 116 St</text>
+      <text x="8" y="195" fill="#7A9AB3">Hudson</text><text x="306" y="105" fill="#6E9561">Park</text>
+    </g>
+    <circle cx="${you.x}" cy="${you.y}" r="74" fill="#E5401D" fill-opacity=".06" stroke="#E5401D" stroke-opacity=".5" stroke-dasharray="4 4"/>
+    ${pins}
+    <circle cx="${you.x}" cy="${you.y}" r="15" fill="#151513" fill-opacity=".14"/><circle cx="${you.x}" cy="${you.y}" r="7" fill="#151513" stroke="#fff" stroke-width="3"/>
+  </svg>`;
+}
+
+function chart(){
+  const W = 350, top = 18, base = 112, max = 50, h = base - top;
+  const y = v => base - v / max * h;
+  const grid = [0,25,50].map(v => `<path d="M30 ${y(v)}H${W}" stroke="#E7E6DF" stroke-width="1"/><text x="0" y="${y(v)+3.5}">$${v}</text>`).join('');
+  const bars = WEEKS.map(([lab, v], i) => {
+    const x = 30 + i * 80 + 18, bh = base - y(v), last = i === WEEKS.length - 1;
+    return `<rect x="${x}" y="${y(v)}" width="44" height="${bh}" rx="6" fill="${last ? '#E5401D' : '#151513'}"/>
+      <text class="v" x="${x+22}" y="${y(v)-6}" text-anchor="middle">$${v}</text>
+      <text x="${x+22}" y="${base+16}" text-anchor="middle">${lab}</text>`;
+  }).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} 132" role="img" aria-label="Earnings by week: ${WEEKS.map(w => w[0]+' $'+w[1]).join(', ')}">${grid}${bars}</svg>`;
+}
+
+/* ---------- screens ---------- */
+const V = {};
+
+V.home = () => {
+  const cat = (k, label, icon) => `<button class="cat" data-act="browse" data-v="${k}">${ic(icon,24)}${label}</button>`;
+  const near = k => { const it = ITEMS[k]; return `<button class="ncard" data-act="item" data-v="${k}">
+      <span class="nart">${ART[it.art]}<span class="fav ${S.fav[k]?'on':''}" data-act="fav" data-v="${k}" role="button" aria-label="Save ${it.short}">${ic('heart',16)}</span></span>
+      <b>${it.name}</b><span class="row small"><span class="grow"><b>${itemPrice(k,it)}</b> / day</span><span class="muted">${it.dist}</span></span>
+      <span class="small muted">★ ${it.rating} (${it.reviews})</span></button>`; };
+  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>
+      ${marketLink()}</div>
+    <div class="body">
+      <div class="stack" style="gap:6px">
+        <button class="loc" data-act="toast" data-v="Discover items near Morningside Heights.">${ic('pin',16)} Morningside Heights ${ic('chevd',16)}</button>
+        <p class="eyebrow">Hi Sam</p>
+        <h1>Borrow for the night</h1>
+      </div>
+      <button class="search" data-act="browse" data-v="all">${ic('search',18)}<span class="grow">Search the marketplace</span>${ic('sliders',18)}</button>
+      <div class="hero">
+        <div class="stack" style="gap:6px"><h3>Hosting this weekend?</h3>
+          <p class="small">Say how many are coming. We'll find a table, chairs and more from neighbors.</p>
+          <button class="btn dark sm" data-act="go" data-v="plan" style="align-self:flex-start;margin-top:6px">Plan a gathering</button></div>
+        <div class="hero-art">${ART.table}</div>
+      </div>
+      <section class="stack"><h2 class="lbl">What do you need?</h2>
+        <div class="cats">${cat('tv','TVs','tv')}${cat('table','Tables','table')}${cat('chairs','Chairs','chair')}${cat('speaker','Speakers','speaker')}</div><button class="link" data-act="browse" data-v="all" style="align-self:flex-start">See all 10 categories →</button></section>
+      <section class="stack"><h2 class="lbl">Near you <button class="link" data-act="browse" data-v="all">Browse all</button></h2>
+        <div class="near">${near('tv')}${near('table')}</div></section>
+      <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow"><b>Every rental is insured up to $1,000.</b> Neighbors are ID-verified.</span>${ic('chev',16)}</button>
+    </div>${tabbar('home')}`;
+};
+
+V.plan = function(){
+ const occ=OCCASIONS[S.occasion];
+ const opt=k=>{
+   const it=ITEMS[k],on=!!S.need[k],suggested=occ.suggest.includes(k);
+   const note=k==='chairs'?`${S.people} seats · from $${itemPrice(k,it)}`:
+     k==='dinnerware'?`${S.people} place settings · from $${itemPrice(k,it)}`:`From $${itemPrice(k,it)} / night`;
+   return `<button class="opt ${on?'on':''}" data-act="need" data-v="${k}" aria-pressed="${on}">
+     <span class="box">${on?ic('check',16):''}</span><span class="grow"><b>${it.short}</b><span class="small muted d">${note}${suggested?' · Suggested for this event':''}</span></span></button>`;
+ };
+ const categories=[...occ.suggest,...ORDER.filter(k=>!occ.suggest.includes(k))];
+ return `${topbar('Plan an event')}
+  <div class="body">
+   <div class="stack" style="gap:5px"><h1>What's the occasion?</h1><p class="small muted">Choose an idea or create your own.</p></div>
+   <div class="occasion-grid">${Object.entries(OCCASIONS).map(([k,o])=>`<button class="occasion ${S.occasion===k?'on':''}" data-act="occasion" data-v="${k}" aria-pressed="${S.occasion===k}"><b>${o.emoji} ${o.label}</b></button>`).join('')}</div>
+   ${S.occasion==='custom'?`<div class="stack" style="gap:7px"><label for="customOccasion" class="small"><b>Name your event</b></label><input id="customOccasion" class="custom-field" placeholder="e.g., Friendsgiving, brunch, karaoke night" value="${esc(S.customOccasion)}" maxlength="55"><p class="hint">Choose any items below, or browse the whole marketplace.</p></div>`:''}
+   <section class="stack"><h2 class="lbl">When?</h2><div class="dates">${DATES.map(d=>`<button class="date ${S.date===d.k?'on':''}" data-act="date" data-v="${d.k}" aria-pressed="${S.date===d.k}"><span class="small">${d.dow}</span><b>${d.d}</b><span class="small">Oct</span></button>`).join('')}</div></section>
+   <section class="stack"><h2 class="lbl">Number of guests</h2><div class="stepper"><button class="stp" data-act="people" data-v="-1" aria-label="Fewer guests" ${S.people<=2?'disabled':''}>${ic('minus',22)}</button>
+     <div class="stp-n"><b>${S.people}</b><span class="small muted">including you</span></div><button class="stp" data-act="people" data-v="1" aria-label="More guests" ${S.people>=8?'disabled':''}>${ic('plus',22)}</button></div></section>
+   <section class="stack"><h2 class="lbl">Rental budget</h2><div class="stepper"><button class="stp" data-act="budget" data-v="-5" aria-label="Lower budget" ${S.budget<=15?'disabled':''}>${ic('minus',22)}</button><div class="stp-n"><b>$${S.budget}</b><span class="small muted">before optional delivery</span></div><button class="stp" data-act="budget" data-v="5" aria-label="Raise budget" ${S.budget>=200?'disabled':''}>${ic('plus',22)}</button></div></section>
+   <section class="stack"><h2 class="lbl">What do you need?</h2><p class="hint">${S.occasion==='custom'?'Pick anything that suits your plans.':'Some helpful starting ideas, all optional.'} Select or deselect anything.</p>
+     ${categories.map(opt).join('')}
+     <button class="planner-helper" data-act="browse" data-v="all">${ic('search',18)} Explore all marketplace listings ${ic('chev',15)}</button>
+   </section>
+  </div>
+  <div class="foot"><button class="btn red" data-act="makebundle" ${selected().length?'':'disabled'}>Find my bundle · ${selected().length} items</button></div>`;
+};
+
+V.bundle = function() {
+ const ks=selected(),valid=ks.filter(k=>!blocked(k)),ls=lendersOf(ks),occ=OCCASIONS[S.occasion];
+ if(!ks.length)return `${topbar('Your bundle')}<div class="body"><h1>No items selected yet</h1><p>Explore the marketplace to add items, or start with an event.</p><button class="btn red" data-act="browse" data-v="all">Browse marketplace</button><button class="btn ghost" data-act="go" data-v="plan">Plan an event</button></div>`;
+ const irow=k=>{
+   if(blocked(k))return `<div class="bundle-line"><span class="grow"><b>${ITEMS[k].short}</b><span class="small muted d">No listings match these filters. Try expanding distance or lowering the rating threshold.</span></span><button class="micro" data-act="remove" data-v="${k}">Remove</button></div>`;
+   const it=itemFor(k),L=LENDERS[it.lender];
+   return `<div class="bundle-line"><span class="thumb">${ART[it.art]}</span><div class="grow stack" style="gap:3px"><b>${title(k)}</b>
+     <span class="small muted">${L.name} · ${it.dist} · ★ ${it.rating}</span>
+     <div class="row" style="gap:5px"><button class="micro accent" data-act="swap" data-v="${k}">Swap</button><button class="micro" data-act="remove" data-v="${k}">Remove</button></div></div><b>$${price(k)}</b></div>`;
+ };
+ const filter=(k,t)=>`<button class="chip pick ${S.priority===k?'on':''}" data-act="priority" data-v="${k}" aria-pressed="${S.priority===k}">${t}</button>`;
+ const radius=v=>`<button class="chip pick ${S.radius===v?'on':''}" data-act="radius" data-v="${v}" aria-pressed="${S.radius===v}">${v} mi</button>`;
+ return `${topbar('Your recommended bundle')}
+  <div class="body">
+   <div class="bundle-intro"><p class="eyebrow">${occ.emoji} Your ${esc(occasionLabel().toLowerCase())}</p><h3>${S.people} guests · ${dateLabel()}</h3>
+      <p class="small">Built around your $${S.budget} budget, nearby listings, ratings and availability.</p></div>
+   <div class="filter-box"><h2 class="lbl">Optimize for</h2><div class="chips">${filter('balanced','Best overall')}${filter('price','Lowest price')}${filter('nearby','Closest')}${filter('rating','Top rated')}</div>
+     <h2 class="lbl">Maximum distance</h2><div class="chips">${[.5,1,2].map(radius).join('')}</div>
+     <div class="row"><b class="small grow">4.8+ ratings only</b><button class="chip pick ${S.minRating===4.8?'on':''}" data-act="ratingfilter" aria-pressed="${S.minRating===4.8}">${S.minRating===4.8?'On':'Off'}</button></div>
+     <p class="note">Change filters to refresh suggestions for your selected date.</p></div>
+   <section class="stack" style="gap:0"><div class="bundle-total"><span>${ks.length} selected categories</span><strong>$${sub(ks)}</strong></div>${ks.map(irow).join('')}
+     <button class="planner-helper" data-act="browse" data-v="all" style="margin-top:12px">${ic('plus',18)} Add another item from marketplace</button></section>
+   ${ls.length?`<div class="mapbox">${mapSvg(ls)}</div>`:''}
+   <div class="row" style="align-items:flex-start"><span class="ic-badge">${ic('walk',20)}</span><div class="grow">
+    <b>${ls.length} pickup ${ls.length===1?'stop':'stops'} · up to ${maxWalk(ls)} min walk</b>
+    <p class="small muted">${valid.length} items available on ${dateLabel()}. ${sub(ks)>S.budget?'Above your budget: try a cheaper swap or adjust your budget.':'Within your rental budget.'}</p></div></div>
+   <button class="strip" data-act="go" data-v="coverage">${ic('shield',20)}<span class="grow">Proposed lender protection is included in every rental.</span>${ic('chev',16)}</button>
+   
+  </div>
+  <div class="foot"><button class="btn red split" data-act="go" data-v="checkout" ${ks.length!==valid.length?'disabled':''}><span>${ks.length!==valid.length?'Adjust filters':'Continue to booking'}</span><span>$${sub(ks)}</span></button></div>`;
+};
+
+const marketMarkup = function(){
+ const keys=ORDER.filter(k=>S.marketCat==='all'||k===S.marketCat);
+ const needle=S.marketSearch.trim().toLowerCase();
+ const entries=keys.flatMap(k=>listings(k).map((it,i)=>({k,it,i}))).filter(({k,it})=>{
+  const match=[ITEMS[k].short,it.name,LENDERS[it.lender].name,...(it.comes||[])].join(' ').toLowerCase();
+  return !needle||match.includes(needle);
+ });
+ if(!entries.length)return `<div class="market-empty"><b>No matching items</b><p class="small muted d">Try another keyword or choose All items.</p><button class="btn ghost sm" data-act="marketcat" data-v="all" style="margin:12px auto 0">View all items</button></div>`;
+ return entries.map(({k,it,i})=>{
+   const inBundle=!!S.need[k]&&!blocked(k)&&(S.swaps[k]===i||(!Number.isInteger(S.swaps[k])&&i===0));
+   const availableNow=available(it),L=LENDERS[it.lender];
+   const verb=!availableNow?'Unavailable':inBundle?'In bundle':S.marketMode==='swap'&&k===S.marketCat?'Swap in':S.need[k]?'Replace item':'Add to bundle';
+   return `<div class="market-card"><span class="thumb">${ART[it.art]}</span>
+     <div class="grow stack" style="gap:5px"><b>${it.name}</b><span class="small muted">${ITEMS[k].short} · ${L.name} · ${it.dist}</span>
+       <span class="small muted">★ ${it.rating} (${it.reviews}) · ${availableNow?'Available '+dateLabel():'Not available '+dateLabel()}</span>
+       <div class="row" style="justify-content:space-between"><b>${itemPrice(k,it)} / night</b></div>
+       <div class="market-actions"><button class="micro" data-act="marketdetails" data-v="${k}:${i}">Details</button>
+         <button class="micro ${!inBundle&&availableNow?'accent':''}" data-act="marketpick" data-v="${k}:${i}" ${!availableNow||inBundle?'disabled':''}>${verb}</button></div>
+     </div></div>`;
+ }).join('');
+};
+
+V.market = function(){
+ const swap=S.marketMode==='swap',k=S.marketCat, ks=selected();
+ return `${topbar(swap?'Swap '+ITEMS[k].short.toLowerCase():'Marketplace','<span class="spacer"></span>')}
+   <div class="body">
+     <div class="stack" style="gap:5px"><h1>${swap?'Choose an alternative':'Explore the marketplace'}</h1>
+       <p class="small muted">${swap?`Showing ${ITEMS[k].short.toLowerCase()} listings for your bundle. Compare lenders, then swap in your favorite.`:'Browse neighbors’ items, search freely, and add anything to your bundle.'}</p></div>
+     <div class="market-banner"><span class="grow small">${ks.length?`${ks.length} ${ks.length===1?'item':'items'} in your bundle · ${sub(ks)} / night`:'Your bundle is empty — start with any item.'}</span>
+       <button class="micro accent" data-act="viewbundle">View bundle</button></div>
+     ${swap?`<button class="link" style="align-self:flex-start" data-act="browse" data-v="all">Browse all categories instead →</button>`:''}
+     <label class="market-search" for="marketSearch">${ic('search',19)}<input id="marketSearch" placeholder="Search speakers, chairs, decor..." value="${esc(S.marketSearch)}" autocomplete="off"><span class="small muted">Search</span></label>
+     <div class="stack" style="gap:8px"><h2 class="lbl">Categories</h2>
+       <div class="market-cats">${[['all','All items'],...ORDER.map(k=>[k,ITEMS[k].short])].map(([category,label])=>`<button class="chip pick ${S.marketCat===category?'on':''}" data-act="marketcat" data-v="${category}" aria-pressed="${S.marketCat===category}">${label}</button>`).join('')}</div></div>
+     <div class="stack"><h2 class="lbl">Available listings</h2><div class="market-results" id="marketResults">${marketMarkup()}</div></div>
+     
+   </div>${tabbar('market')}`;
+};
+
+V.swap = () => V.market();
+
+V.item = function(){
+ const k=S.item, idx=S.preview&&S.preview.k===k?S.preview.index:(Number.isInteger(S.swaps[k])?S.swaps[k]:0);
+ const it=listings(k)[idx]||ITEMS[k], L=LENDERS[it.lender];
+ const inB=!!S.need[k]&&!blocked(k)&&(S.swaps[k]===idx||(!Number.isInteger(S.swaps[k])&&idx===0));
+ const name=k==='chairs'?`${S.people} ${it.name.toLowerCase()}`:k==='dinnerware'?`Dinnerware for ${S.people}`:it.name;
+ const amount=itemPrice(k,it);
+ return `<div class="top"><button class="ib" data-act="back" aria-label="Back">${ic('back',22)}</button><span class="grow"></span>${marketLink()}
+      <button class="ib ${S.fav[k]?'fav-on':''}" data-act="fav" data-v="${k}" aria-label="Save" aria-pressed="${!!S.fav[k]}">${ic('heart',22)}</button></div>
+    <div class="body">
+      <div class="hero-img">${ART[it.art]}<span class="badge-ins">${ic('shield',13)} Proposed protection</span></div>
+      <div class="stack" style="gap:6px">
+        <div class="row" style="align-items:flex-start"><h1 class="grow" style="font-size:24px">${name}</h1><span class="pricetag">$${amount} / night</span></div>
+        <p class="small muted">★ ${it.rating} (${it.reviews} reviews) · ${it.dist} away${k==='chairs'?` · $${it.per} per chair`:''}</p></div>
+      <div class="chips"><span class="chip">${ic('id',14)} Verified owner</span><span class="chip">${ic('shield',14)} Protection concept</span></div>
+      <div class="card row"><span class="av" style="background:${L.color}">${L.initials}</span>
+        <div class="grow"><b>${L.name}</b><p class="small muted">Lending since ${L.since} · ${L.reply}</p></div></div>
+      <section class="stack"><h2 class="lbl">Comes with</h2><div class="chips">${it.comes.map(c=>`<span class="chip">${c}</span>`).join('')}</div></section>
+      <section class="stack"><h2 class="lbl">Pickup spot</h2><p class="row" style="gap:6px">${ic('pin',16)} ${L.street} · ${L.walk} min walk</p></section>
+      <section class="stack"><h2 class="lbl">Recent review</h2><blockquote class="review">“${it.review||'A handy rental for the occasion.'}”<cite>${it.reviewer||'Verified borrower'}</cite></blockquote></section>
+    </div>
+    <div class="foot">${inB?`<button class="btn dark" data-act="viewbundle">${ic('check',18)} In your bundle · View</button>`:
+      `<button class="btn red split" data-act="marketpick" data-v="${k}:${idx}" ${available(it)?'':'disabled'}><span>${S.need[k]?'Replace in bundle':'Add to bundle'}</span><span>$${amount}</span></button>`}</div>`;
+};
+
+V.coverage = () => `${topbar('Coverage')}
+    <div class="body">
+      <div class="cov-hero"><span class="cov-ic">${ic('shield',32)}</span><h1>Every rental is covered</h1>
+        <p class="muted">If something breaks while it's with you, Borrowly Protect pays the owner. It's included in every booking.</p></div>
+      <div class="stack" style="gap:16px">
+        <div class="fact"><span class="ic-badge">${ic('coins',20)}</span><div><b>Up to $1,000 per item</b><p class="small muted">Drops, spills and accidental damage during your rental.</p></div></div>
+        <div class="fact"><span class="ic-badge">${ic('id',20)}</span><div><b>ID-verified on both sides</b><p class="small muted">Every borrower and lender verifies a government ID before their first rental.</p></div></div>
+        <div class="fact"><span class="ic-badge">${ic('camera',20)}</span><div><b>Photos at pickup and return</b><p class="small muted">You both photograph the item, so there's a clear record of its condition.</p></div></div>
+        <div class="fact"><span class="ic-badge">${ic('clock',20)}</span><div><b>A hold, not a charge</b><p class="small muted">We hold $100 on your card and release it within 24 hours of the return.</p></div></div>
+      </div>
+      <div class="card stack"><b>If something goes wrong</b>
+        <ol class="steps"><li>Report it in the app within 48 hours.</li><li>We compare the pickup and return photos.</li><li>The owner is paid within 5 days. You pay nothing.</li></ol></div>
+      
+    </div>
+    <div class="foot"><button class="btn ghost" data-act="back">Got it</button></div>`;
+
+V.checkout = () => {
+  const ks = selected(), ls = lendersOf(ks), s = sub(ks), total = s + (S.delivery ? 12 : 0);
+  const choice = (on, v, t, d, p) => `<button class="choice ${on?'on':''}" data-act="deliv" data-v="${v}" aria-pressed="${on}"><span class="radio"></span>
+      <span class="grow"><b>${t}</b><span class="small muted d">${d}</span></span><b>${p}</b></button>`;
+  return `${topbar('Review and pay')}
+    <div class="body">
+      <div class="card stack" style="gap:12px">
+        <div class="row"><span class="ic-badge">${ic('calendar',18)}</span><div class="grow"><b>${dateLabel()}, 4:30 PM → ${nextLabel()}, 11 AM</b><p class="small muted">1 night · ${esc(occasionLabel().toLowerCase())} for ${S.people}</p></div></div>
+        <div class="divider"></div>
+        ${ks.map(k => `<div class="row small"><span class="thumb sm">${ART[itemFor(k).art]}</span><span class="grow"><b>${title(k)}</b><span class="muted d">${LENDERS[itemFor(k).lender].name}</span></span><b>$${price(k)}</b></div>`).join('')}
+      </div>
+      <section class="stack"><h2 class="lbl">How it gets to you</h2>
+        ${choice(!S.delivery,'pickup','Pick it up yourself',`${ls.length} ${ls.length>1?'stops':'stop'}, all within a ${maxWalk(ls)}-minute walk`,'Free')}
+        ${choice(S.delivery,'runner','Runner drops off and picks up','At your door by 5 PM. Collected by 11 AM the next day.','$12')}
+      </section>
+      <section class="stack"><h2 class="lbl">Price</h2>
+        <div class="prices">
+          <div class="pr"><span>Rental, 1 day</span><span>$${s}</span></div>
+          
+          ${S.delivery ? '<div class="pr"><span>Runner</span><span>$12</span></div>' : ''}
+          <div class="pr"><span>Damage cover up to $1,000</span><span class="ok-t">Included</span></div>
+          <div class="pr total"><span>Total</span><span>$${total}</span></div>
+          <p class="small muted">We also hold $100 on your card until the return. It isn't charged.</p>
+        </div></section>
+    </div>
+    <div class="foot"><button class="btn red split" data-act="pay"><span>Pay and request</span><span>$${total}</span></button></div>`;
+};
+
+V.booked = () => {
+  const B = S.booked;
+  if (!B) return `<div class="top"><span class="spacer"></span><div class="ttl">Bookings</div><span class="spacer"></span></div>
+    <div class="body"><div class="empty"><span class="cov-ic">${ic('calendar',30)}</span><h3>No bookings yet</h3>
+      <p class="muted small">Plan a gathering and the things you borrow show up here.</p>
+      <button class="btn red sm" data-act="go" data-v="plan">Plan a gathering</button></div></div>${tabbar('booked')}`;
+  const d = DATES.find(x => x.k === B.date), ls = lendersOf(B.items), L0 = LENDERS[ls[0]];
+  const bundleName = B.items.map(k => k === 'chairs' ? `${B.people} chairs` : itemFor(k).short).join(' + ');
+  const handoff = B.delivery
+    ? `<li class="next"><span class="dotx"></span><div><b>Runner drops everything off</b><span class="s">At your door · live tracking</span></div><time>${d.dow} 4:30 PM</time></li>`
+    : ls.map((l, i) => `<li class="${i===0?'next':''}"><span class="dotx"></span><div><b>Pick up from ${LENDERS[l].name}</b><span class="s">${LENDERS[l].street} · ${LENDERS[l].walk} min walk</span></div><time>${d.dow} ${['4:30','4:45','5:00','5:15'][i]} PM</time></li>`).join('');
+  const msg = B.delivery
+    ? `<span class="av sm" style="background:var(--yellow)">AK</span><div class="bubble"><b>Alex, your runner:</b> I'll be there at 4:30 and text you from the lobby.<span class="small muted d">${d.dow} 2:16 PM</span></div>`
+    : `<span class="av sm" style="background:${L0.color}">${L0.initials}</span><div class="bubble"><b>${L0.first}:</b> I'll meet you in the lobby at 4:30. Have a great dinner!<span class="small muted d">${d.dow} 2:16 PM</span></div>`;
+  return `<div class="top"><span class="spacer"></span><div class="ttl">Bookings</div><span class="spacer"></span></div>
+    <div class="body">
+      <div class="row"><h1 class="grow">You're booked</h1><span class="pricetag">${d.dow} · 1 night</span></div>
+      <div class="bk-card"><span class="thumbs">${B.items.slice(0,3).map(k => `<span class="thumb sm">${ART[itemFor(k).art]}</span>`).join('')}</span>
+        <div class="grow"><b>${bundleName}</b><p class="small" style="opacity:.75">from ${names(ls)}</p></div></div>
+      <ol class="tl">
+        <li class="done"><span class="dotx">${ic('check',12)}</span><div><b>${firsts(ls)} approved</b><span class="s">Paid $${B.total} · $100 hold, not charged</span></div><time>Now</time></li>
+        ${handoff}
+        <li><span class="dotx"></span><div><b>Your ${esc((B.occasion==='custom'?(B.customOccasion||'custom event'):OCCASIONS[B.occasion||'dinner'].label).toLowerCase())}</b><span class="s">${B.people} people at your place</span></div><time>${d.dow} 7:00 PM</time></li>
+        <li><span class="dotx"></span><div><b>${B.delivery ? 'Runner collects it all' : 'Return to each neighbor'}</b><span class="s">${B.delivery ? 'Leave it inside your door' : 'Same spots · rate each other'}</span></div><time>${d.next} 11 AM</time></li>
+      </ol>
+      <div class="soft stack" style="gap:4px"><div class="row" style="gap:6px">${ic('shield',16)}<b class="grow">You're covered</b><span class="small">Included</span></div>
+        <p class="small">Damage protection up to $1,000 per item. Everyone involved is ID-verified.</p></div>
+      <div class="card row"><span class="ic-badge">${ic('key',18)}</span><span class="grow small muted">${B.delivery ? 'Delivery code' : 'Pickup code'}</span><b class="code">4821</b></div>
+      <div class="row" style="align-items:flex-start;gap:10px">${msg}</div>
+      <div class="row" style="gap:8px"><button class="btn ghost sm grow" data-act="toast" data-v="Messaging is not available for this booking.">${ic('msg',16)} Message</button>
+        <button class="btn ghost sm grow" data-act="toast" data-v="Pickup directions appear here after booking.">${ic('nav',16)} Directions</button></div>
+      <button class="btn dark" data-act="go" data-v="ret" style="flex:none">Start return</button>
+    </div>${tabbar('booked')}`;
+};
+
+V.ret = () => {
+  const B = S.booked; if (!B) return V.booked();
+  const ls = lendersOf(B.items), done = B.items.every(k => S.ret[k]);
+  const tname = k => k === 'chairs' ? `${B.people} folding chairs` : k === 'dinnerware' ? `Dinnerware for ${B.people}` : itemFor(k).name;
+  const shot = k => `<span class="slot filled">${ART[itemFor(k).art]}<span class="ok">${ic('check',12)}</span></span>`;
+  return `${topbar('Return and rate')}
+    <div class="body">
+      <p class="muted">Take a photo of each item where you hand it back. That closes the rental and releases your $100 hold.</p>
+      ${B.items.map(k => `<div class="card stack" style="gap:12px">
+          <div class="row"><b class="grow">${tname(k)}</b><span class="small muted">${LENDERS[itemFor(k).lender].name}</span></div>
+          <div class="row"><div class="slot-w">${shot(k)}<span class="small muted">Pickup</span></div>
+            <div class="slot-w">${S.ret[k] ? shot(k) : `<button class="slot" data-act="photo" data-v="${k}" aria-label="Add return photo of ${ITEMS[k].short}">${ic('camera',22)}</button>`}<span class="small muted">Return</span></div>
+            <p class="small grow ${S.ret[k] ? '' : 'muted'}">${S.ret[k] ? `${ic('check',14)} Matches the pickup photo.` : 'Tap the camera to add a photo.'}</p></div>
+        </div>`).join('')}
+      <section class="stack"><h2 class="lbl">Rate your neighbors</h2>
+        ${ls.map(l => `<div class="row"><span class="av" style="background:${LENDERS[l].color}">${LENDERS[l].initials}</span><b class="grow">${LENDERS[l].name}</b>
+          <div class="stars">${[1,2,3,4,5].map(n => `<button class="star ${(S.rate[l]||0)>=n?'on':''}" data-act="rate" data-v="${l}:${n}" aria-label="${n} star${n>1?'s':''} for ${LENDERS[l].name}">${ic('star',22)}</button>`).join('')}</div></div>`).join('')}
+      </section>
+    </div>
+    <div class="foot"><button class="btn red" data-act="finish" ${done ? '' : 'disabled'}>${done ? 'Finish return' : `Add ${B.items.filter(k => !S.ret[k]).length} more photo${B.items.filter(k => !S.ret[k]).length>1?'s':''}`}</button></div>`;
+};
+
+V.earnings = () => {
+  const total = WEEKS.reduce((a, w) => a + w[1], 0);
+  const mine = MINE.map(m => `<div class="irow"><span class="thumb sm">${ART[m.art]}</span><span class="grow"><b>${m.name}</b><span class="small muted d">$${m.price} / day · ${m.nights} rentals</span></span><b>$${m.earned}</b></div>`).join('');
+  const newRow = S.listed ? `<div class="irow"><span class="thumb sm">${ART.chairs}</span><span class="grow"><b>${esc(S.lname)}</b><span class="small muted d">$${S.lprice} / day · just listed</span></span><span class="chip" style="background:var(--yellow)">New</span></div>` : '';
+  return `<div class="top"><button class="logo" data-act="reset" aria-label="Borrowly, restart"><img class="brand-mark" src="borrowly-icon.svg" alt="">borrowly</button><span class="grow"></span>${marketLink()}<span class="mode">Lending</span></div>
+    <div class="body">
+      <div class="stack" style="gap:4px"><p class="eyebrow">Your stuff earned</p><div class="big">$${total}</div><p class="small muted">in the last 4 weeks · paid out every Friday</p></div>
+      ${S.request ? '' : `<button class="req" data-act="go" data-v="request"><span class="av" style="background:#D9E7C9">AL</span>
+        <span class="grow"><b>Ava L. wants your projector</b><span class="small d">Sun, Oct 25 · movie night for 5</span></span><span class="btn dark sm">Review</span></button>`}
+      <section class="stack"><h2 class="lbl">By week</h2>${chart()}</section>
+      <section class="stack" style="gap:0"><h2 class="lbl" style="margin-bottom:2px">Your items</h2>${mine}${newRow}</section>
+      ${S.request === 'accepted' ? `<section class="stack"><h2 class="lbl">Coming up</h2><div class="card row"><span class="thumb sm">${ART.projector}</span>
+        <div class="grow"><b>Projector · Ava L.</b><p class="small muted">Pickup Sun, Oct 25 at 6 PM in your lobby</p></div><b>$8.50</b></div></section>` : ''}
+      <button class="btn ghost" data-act="go" data-v="list" style="flex:none">${ic('plus',18)} List another item</button>
+    </div>${tabbar('earnings')}`;
+};
+
+V.request = () => {
+  const r = S.request;
+  return `${topbar('Request')}
+    <div class="body">
+      <div class="ava-head"><span class="av lg" style="background:#D9E7C9">AL</span><h3>Ava L.</h3>
+        <div class="chips" style="justify-content:center"><span class="chip">${ic('id',14)} ID verified</span><span class="chip">9 rentals</span><span class="chip">★ 5.0</span></div></div>
+      <div class="bubble">Hi! I'm hosting a movie night for 5 on Friday. I live on 121st and can pick up at 6.</div>
+      <div class="card stack" style="gap:12px">
+        <div class="row"><span class="thumb sm">${ART.projector}</span><div class="grow"><b>Projector + screen</b><p class="small muted">$10 / day</p></div></div>
+        <div class="divider"></div>
+        <div class="prices">
+          <div class="pr"><span class="muted">When</span><span>Sun 6 PM → Mon 10 AM</span></div>
+          <div class="pr"><span class="muted">Handoff</span><span>Your lobby</span></div>
+          <div class="pr"><span class="muted">Price</span><span>$10.00</span></div>
+          <div class="pr"><span class="muted">Borrowly fee (15%)</span><span>−$1.50</span></div>
+          <div class="pr total"><span>You earn</span><span>$8.50</span></div>
+        </div>
+      </div>
+      <div class="soft small row" style="gap:8px;align-items:flex-start">${ic('shield',16)}<span>Your projector is covered up to $1,000 while Ava has it.</span></div>
+    </div>
+    <div class="foot">${r
+      ? `<button class="btn" disabled>${r === 'accepted' ? 'Accepted' : 'Declined'}</button>`
+      : `<button class="btn ghost" data-act="decline" style="flex:.6">Decline</button><button class="btn red" data-act="accept">Accept</button>`}</div>`;
+};
+
+V.list = () => `${topbar('List an item')}
+    <div class="body">
+      <div class="hero-img">${ART.chairs}<button class="chg" data-act="toast" data-v="Choose a photo for your listing.">${ic('camera',15)} Change photo</button></div>
+      <div class="field"><label for="lname">What are you lending?</label><input id="lname" value="${esc(S.lname)}" autocomplete="off"></div>
+      <section class="stack"><h2 class="lbl">Category</h2>
+        <div class="chips">${['TVs','Tables','Chairs','Speakers','Other'].map(c => `<button class="chip pick ${S.lcat===c?'on':''}" data-act="lcat" data-v="${c}" aria-pressed="${S.lcat===c}">${c}</button>`).join('')}</div></section>
+      <section class="stack"><h2 class="lbl">Price per day</h2>
+        <div class="stepper"><button class="stp" data-act="lprice" data-v="-1" aria-label="Lower price" ${S.lprice<=2?'disabled':''}>${ic('minus',22)}</button>
+          <div class="stp-n"><b>$${S.lprice}</b><span class="small muted">for the whole set</span></div>
+          <button class="stp" data-act="lprice" data-v="1" aria-label="Raise price" ${S.lprice>=30?'disabled':''}>${ic('plus',22)}</button></div>
+        <p class="small muted row" style="gap:6px">${ic('info',14)} Neighbors charge $2–4 per chair. We suggest $8 for four.</p></section>
+      <section class="stack"><h2 class="lbl">Available on</h2>
+        <div class="days">${DAYNAMES.map(d => `<button class="day ${S.ldays.includes(d)?'on':''}" data-act="lday" data-v="${d}" aria-pressed="${S.ldays.includes(d)}">${d}</button>`).join('')}</div></section>
+      <div class="row"><div class="grow"><b>Hand off in my lobby</b><p class="small muted">Borrowers meet you downstairs.</p></div>
+        <button class="sw ${S.lobby?'on':''}" data-act="lobby" role="switch" aria-checked="${S.lobby}" aria-label="Hand off in my lobby"></button></div>
+      <div class="soft small row" style="gap:8px;align-items:flex-start">${ic('shield',16)}<span>Covered up to $1,000 every time someone borrows it.</span></div>
+    </div>
+    <div class="foot"><button class="btn red" data-act="publish">Publish listing</button></div>`;
+
+/* ---------- navigation ---------- */
+const FLOW_B = [['home','Home'],['plan','Plan an event'],['bundle','Recommended bundle'],['market','Marketplace'],['item','Item and lender'],['coverage','Coverage'],['checkout','Checkout'],['booked','Booked'],['ret','Return and rate']];
+const FLOW_L = [['earnings','Earnings'],['request','Approve a request'],['list','List an item']];
+const JUMP = {
+  home:['home'], market:['home','market'], plan:['home','plan'], bundle:['home','plan','bundle'], item:['home','plan','bundle','item'],
+  swap:['home','plan','bundle','swap'], coverage:['home','plan','bundle','coverage'], checkout:['home','plan','bundle','checkout'],
+  booked:['booked'], ret:['booked','ret'], earnings:['earnings'], request:['earnings','request'], list:['earnings','list'],
+};
+const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+const views = document.getElementById('views');
+let stack = ['home'], cur = null;
+
+function show(name, dir){
+  const el = document.createElement('section');
+  el.className = 'view'; el.dataset.screen = name; el.innerHTML = V[name]();
+  const old = cur; views.appendChild(el); cur = el;
+  if (old) {
+    old.style.pointerEvents = 'none';
+    if (dir && !reduce) {
+      const [a, b] = {fwd:['in-r','out-l'], back:['in-l','out-r'], fade:['in-f','out-f']}[dir];
+      if (dir === 'back') old.style.zIndex = 2;
+      el.classList.add(a); old.classList.add(b);
+      setTimeout(() => old.remove(), 360);
+    } else old.remove();
+  }
+  try { history.replaceState(null, '', location.pathname + location.search + '#' + name); } catch (e) {}
+  syncPanel();
+}
+function rerender(){
+  if (!cur) return;
+  const b = cur.querySelector('.body'), st = b ? b.scrollTop : 0;
+  cur.innerHTML = V[cur.dataset.screen]();
+  const nb = cur.querySelector('.body'); if (nb) nb.scrollTop = st;
+}
+const go = n => { stack.push(n); show(n, 'fwd'); };
+const back = () => { if (stack.length > 1) { stack.pop(); show(stack.at(-1), 'back'); } };
+const tab = n => {
+ if(n==='market'){S.marketMode='browse';S.marketCat='all';S.marketSearch='';S.preview=null;}
+ if(stack.at(-1)===n&&stack.length===1){rerender();return;}
+ stack=[n];show(n,'fade');
+};
+function ensureBooking(){
+  if (S.booked) return;
+  const ks = selected().length ? selected() : ['table','chairs'];
+  S.booked = {items:ks, occasion:S.occasion, customOccasion:S.customOccasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
+}
+function jump(n){
+  if (!JUMP[n]) n = 'home';
+  if (n === 'booked' || n === 'ret') ensureBooking();
+  if (n === 'item' && !S.item) S.item = 'table';
+  stack = JUMP[n].slice(); show(n, cur ? 'fade' : null);
+}
+
+let tt;
+function toast(msg, icon = 'check'){
+  const t = document.getElementById('toast');
+  t.innerHTML = `${ic(icon,18)}<span>${msg}</span>`; t.classList.add('show');
+  clearTimeout(tt); tt = setTimeout(() => t.classList.remove('show'), 2600);
+}
+
+const A = {
+  go, back, tab, jump,
+  occasion:v=>{ S.occasion=v; S.need=Object.fromEntries(ORDER.map(k=>[k,OCCASIONS[v].defaults.includes(k)])); S.swaps={}; rerender(); },
+  budget:v=>{ S.budget=Math.max(15,Math.min(200,S.budget+Number(v))); rerender(); },
+  makebundle:()=>{recommend();go('bundle');},
+  priority:v=>{ S.priority=v; recommend(); rerender(); },
+  radius:v=>{ S.radius=Number(v); recommend(); rerender(); },
+  ratingfilter:()=>{ S.minRating=S.minRating===4.8?0:4.8; recommend(); rerender(); },
+  browse:v=>{
+  S.marketMode='browse';S.marketCat=ORDER.includes(v)?v:'all';S.marketSearch='';S.preview=null;
+  if(cur&&cur.dataset.screen==='market')rerender();else go('market');
+ },
+ swap:v=>{S.item=v;S.marketMode='swap';S.marketCat=v;S.marketSearch='';S.preview=null;go('market');},
+ marketcat:v=>{if(S.marketMode==='swap'&&v!==S.marketCat)S.marketMode='browse';S.marketCat=v;rerender();},
+ marketdetails:v=>{
+  const [k,raw]=v.split(':'),i=Number(raw);if(!ITEMS[k]||!listings(k)[i])return;
+  S.preview={k,index:i};S.item=k;go('item');
+ },
+ marketpick:v=>{
+  const [k,raw]=v.split(':'),i=Number(raw),it=ITEMS[k]&&listings(k)[i];
+  if(!it||!available(it))return;
+  S.need[k]=true;S.swaps[k]=i;S.preview=null;
+  stack=['home','plan','bundle'];show('bundle','fwd');toast(ITEMS[k].short+' added to your bundle');
+ },
+ viewbundle:()=>{S.preview=null;stack=['home','plan','bundle'];show('bundle','fwd');},
+
+  choose:v=>{ const i=Number(v),k=S.item,it=listings(k)[i]; if(!it||!eligible(it))return; S.swaps[k]=i; back(); },
+  remove:v=>{ S.need[v]=false; delete S.swaps[v]; rerender(); },
+  item: v => { S.item=v; S.preview={k:v,index:0}; go('item'); },
+  toast: v => toast(v, 'info'),
+  reset: () => { S = fresh(); stack = ['home']; show('home', cur ? 'fade' : null); },
+  fav: v => { S.fav[v] = !S.fav[v]; rerender(); if (S.fav[v]) toast('Saved to your list', 'heart'); },
+  date: v => { S.date = v; rerender(); },
+  people: v => { S.people = Math.min(8, Math.max(2, S.people + Number(v))); rerender(); },
+  need: v => { S.need[v] = !S.need[v]; delete S.swaps[v]; rerender(); },
+  add: v => A.marketpick(v+':'+(Number.isInteger(S.swaps[v])?S.swaps[v]:0)),
+  deliv: v => { S.delivery = v === 'runner'; rerender(); },
+  pay: () => {
+    const ks = selected(), ls = lendersOf(ks);
+    S.booked = {items:ks, occasion:S.occasion, customOccasion:S.customOccasion, delivery:S.delivery, date:S.date, people:S.people, total:sub(ks) + (S.delivery ? 12 : 0)};
+    S.ret = {}; S.rate = {};
+    stack = ['booked']; show('booked', 'fwd');
+    toast(`${firsts(ls)} approved your request`);
+  },
+  photo: v => { S.ret[v] = true; rerender(); },
+  rate: v => { const [l, n] = v.split(':'); S.rate[l] = Number(n); rerender(); },
+  finish: () => { S.booked = null; S.ret = {}; S.rate = {}; stack = ['home']; show('home', 'fade'); toast('Returned. Your $100 hold is released.'); },
+  accept: () => { S.request = 'accepted'; stack = ['earnings']; show('earnings', 'back'); toast('Accepted. Ava picks up Sunday at 6 PM.'); },
+  decline: () => { S.request = 'declined'; stack = ['earnings']; show('earnings', 'back'); toast('Declined. We’ll suggest other lenders to Ava.', 'info'); },
+  lcat: v => { S.lcat = v; rerender(); },
+  lprice: v => { S.lprice = Math.min(30, Math.max(2, S.lprice + Number(v))); rerender(); },
+  lday: v => { S.ldays = S.ldays.includes(v) ? S.ldays.filter(d => d !== v) : [...S.ldays, v]; rerender(); },
+  lobby: () => { S.lobby = !S.lobby; rerender(); },
+  publish: () => { S.listed = true; stack = ['earnings']; show('earnings', 'back'); toast('Listed. Neighbors can book it now.'); },
+};
+
+document.addEventListener('click', e => {
+  const t = e.target.closest('[data-act]'); if (!t || t.disabled) return;
+  if (t.closest('.view') && t.closest('.view') !== cur) return;
+  e.preventDefault(); e.stopPropagation();
+  const f = A[t.dataset.act]; if (f) f(t.dataset.v, t);
+});
+document.addEventListener('keydown', e => {
+  const t = e.target; if ((e.key === 'Enter' || e.key === ' ') && t.getAttribute && t.getAttribute('role') === 'button') { e.preventDefault(); t.click(); }
+});
+document.addEventListener('input',e=>{
+ if(e.target.id==='lname')S.lname=e.target.value;
+ if(e.target.id==='customOccasion')S.customOccasion=e.target.value;
+ if(e.target.id==='marketSearch'){
+  S.marketSearch=e.target.value;
+  const result=document.getElementById('marketResults');
+  if(result)result.innerHTML=marketMarkup();
+ }
+});
+document.addEventListener('gesturestart', e => e.preventDefault());
+
+/* ---------- side panel ---------- */
+const flowList = (items, start) => items.map(([k, l], i) => `<li><button data-act="jump" data-v="${k}" data-k="${k}"><span class="n">${start + i}</span>${l}</button></li>`).join('');
+document.getElementById('flowB').innerHTML = flowList(FLOW_B, 1);
+document.getElementById('flowL').innerHTML = flowList(FLOW_L, FLOW_B.length + 1);
+function syncPanel(){
+  const n = cur && cur.dataset.screen;
+  document.querySelectorAll('.flow button').forEach(b => b.classList.toggle('on', b.dataset.k === n));
+}
+
+/* ---------- layout mode ---------- */
+const root = document.documentElement, body = document.body;
+const isShot = /(^|[?&])shot\b/.test(location.search);
+if (isShot) { root.classList.add('shot'); body.classList.add('shot'); }
+function fit(){
+  const standalone = navigator.standalone === true || matchMedia('(display-mode: standalone)').matches;
+  // A phone gets the bare app at any orientation: narrow screens, touch devices with a phone-sized screen, or launched from the Home Screen.
+  const phone = matchMedia('(pointer: coarse)').matches && Math.min(screen.width, screen.height) <= 500;
+  const full = false; // Always keep the phone mockup on yellow, even on mobile.
+  body.classList.toggle('full', full);
+  let s = 1;
+  if (!full && !isShot) {
+    const wide = innerWidth >= 900;
+    const availW = innerWidth - 48; // Centered standalone phone; no left panel.
+    s = Math.min(1, (innerHeight - 48) / 868, availW / 414);
+    s = Math.max(.5, s);
+  }
+  root.style.setProperty('--s', s.toFixed(3));
+}
+addEventListener('resize', fit);
+fit();
+jump((location.hash || '#home').slice(1));
+})();
+</script>
+
+</body>
+</html>
