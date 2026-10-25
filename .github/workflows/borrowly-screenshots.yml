@@ -6,6 +6,8 @@ on:
     paths:
       - '.github/workflows/borrowly-screenshots.yml'
       - 'scripts/capture-screenshots.cjs'
+  pull_request:
+    branches: [borrowly-real-app]
   workflow_dispatch:
 
 permissions:
@@ -62,6 +64,7 @@ jobs:
           path: screenshots/
           if-no-files-found: warn
       - name: Publish screenshots on this branch
+        if: github.event_name == 'push'
         run: |
           git config user.name 'github-actions[bot]'
           git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
